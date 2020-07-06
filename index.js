@@ -16,7 +16,8 @@ app.set('view engine', 'ejs')
 app.get('/', (req, res) => res.render('pages/index'))
 
 /*
-  create table usr (uid char(10) NOT NULL, username char(50) NOT NULL, password char(255) NOT NULL, email char(100) NOT NULL);
+    psql DATABSE 'usrs' table usr:
+    create table usr (uid char(10) NOT NULL, username char(50) NOT NULL, password char(255) NOT NULL, email char(100) NOT NULL);
             ____________________________________________
       usr:  |uid | username  | password  | email        |
             --------------------------------------------

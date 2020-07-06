@@ -1,0 +1,37 @@
+body {
+    background-image: url("images/welcome/dark.jpg");
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+.welcome{
+  color: #deb887;
+  font-size: 80px;
+  text-align: center;
+}
+.Over{
+  color: #B8860B;
+  font-size: 40px;
+  text-align: left;
+  text-decoration: underline;
+}
+.WHO{
+  color: #deb887;
+  font-size: 40px;
+  text-align: left;
+}
+.hfeatures
+{
+  color: #B8860B;
+  font-size: 40px;
+  text-align: left;
+  text-decoration: underline;
+}
+.rfeatures{
+  color: #B8860B;
+  font-size: 30px;
+  text-align: left;
+  text-indent: 50px;
+}
+#proceed_t{
+  color: #7FFFD4;
+}
