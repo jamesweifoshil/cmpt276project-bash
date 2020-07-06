@@ -61,7 +61,7 @@ var Storage = multer.diskStorage({
 
 var Storage = multer.diskStorage({
   destination: function(req, file, callback) {
-      callback(null, "./files");
+      callback(null, "./fileUploads");
   },
   filename: function(req, file, callback) {
       callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname);
@@ -73,7 +73,7 @@ var upload = multer({
 }).array("imgUploader", 3); //Field name and max count
 
 app.get("/", function(req, res) {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "/fileUplaod.html");
 });
 app.post("/api/Upload", function(req, res) {
   upload(req, res, function(err) {
