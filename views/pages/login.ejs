@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <% include ../partials/header.ejs %>
+  </head>
+  <body>
+    <h1>Log in</h1>
+    <ul>
+      <% if (messages.success_msg) { %>
+        <li><%= messages.success_msg %></li>
+      <% } %>
+    </ul>
+    <ul>
+      <% if (messages.error){ %>
+        <li><%= messages.error %></li>
+      <% } %>
+    </ul>
+    <form action="/login" method="post">
+      <label for="Username">Username</label>
+      <input class="form-control" type="text" id="username" name="username" placeholder="Username"/>
+      <label for="Password">Password</label>
+      <input class="form-control" type="password" id="password" name="password" placeholder="Password"/>
+      <input type="submit" value="Log in" class="btn btn-sm btn-success"/>
+    </form>
+    <div>
+      <a href="/register">Register</a>
+    </div>
+  </body>
+</html>
