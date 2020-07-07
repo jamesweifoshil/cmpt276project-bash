@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <% include ../partials/header.ejs %>
+  </head>
+  <body>
+    <h1>Register</h1>
+    <ul>
+      <% if(typeof errors != 'undefined') {%> <%errors.forEach(error=>{ %>
+      <li><%=error.message%></li>
+      <%}) %> <%} %>  
+    </ul>
+    <form action="/register" method="post">
+      <label for="Email">Email</label>
+      <input class="form-control" type="email" id="email" name="email" placeholder="Email" maxlength="30" required/>
+      <label for="Username">Username</label>
+      <input class="form-control" type="text" id="username" name="username" placeholder="Username"/>
+      <label for="Password">Password</label>
+      <input class="form-control" type="password" id="password" name="password" placeholder="Password"/>
+      <label>Confirm Password</label>
+      <input class="form-control" type="password" id="password2" name="password2" placeholder="Confirm Password"/>
+      <input type="submit" value="Register" class="btn btn-sm btn-success"/>
+    </form>
+    <div>
+      <a href="/login">Already registered? Login here</a>
+    </div>
+  </body>
+</html>
