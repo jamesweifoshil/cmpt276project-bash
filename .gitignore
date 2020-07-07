@@ -10,3 +10,6 @@ npm-debug.log
 # Docker
 Dockerfile
 docker-compose.yml
+
+# Local folder for testing file uploads
+fileUploads/*
