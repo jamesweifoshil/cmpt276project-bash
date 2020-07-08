@@ -23,7 +23,8 @@
     "express-session": "^1.17.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "session-file-store": "^1.4.0"
+    "session-file-store": "^1.4.0",
+    "aws-sdk": "^2.0"
   },
   "devDependencies": {
     "got": "^11.3.0",
