@@ -69,7 +69,10 @@ app.get('/fileUpload', (req, res) => res.render('fileUpload.html'));
  * the anticipated URL of the image.
  */
 app.get('/sign-s3', (req, res) => {
-  const s3 = new aws.S3();
+  const s3 = new aws.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  });
   const fileName = req.query['file-name'];
   const fileType = req.query['file-type'];
   const s3Params = {
