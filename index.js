@@ -101,53 +101,17 @@ app.post('/save-details', (req, res) => {
   // TODO: Read POSTed form data and do something useful
 });
 
-
-///////////////////////////////////////////////
-
-/*  All fiels contain the following metadata:
-    - fieldname: Field name specified in the form.
-    - originalname: Name of the file on the user’s computer.
-    - encoding: Encoding type of the file.
-    - mimetype: Mime type of the file.
-    - size: Size of the file in bytes.
-    - destination: The folder to which the file has been saved.
-    - filename: The name of the file in the destination.
-    - path: The full path to the uploaded file.
-    - buffer: A Buffer of the entire file.
-*/
-
-
-var Storage = multer.diskStorage({
-  destination: function(req, file, callback) {
-      callback(null, "./public/fileUploads"); // Destination folder
-  },
-  filename: function(req, file, callback) {
-      callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname);
-  }
-});
-
-var upload = multer({
-  storage: Storage
-}).array("imgUploader", 3); //Field name and max count
-
-app.get("/", function(req, res) {
-  res.sendFile(__dirname + "/fileUplaod.html");
-});
-app.post("/api/Upload", function(req, res) {
-  upload(req, res, function(err) {
-      if (err) {
-          return res.end("Something went wrong!");
-      }
-      return res.end("File uploaded sucessfully!.");
-  });
-});
-
-//////////////////////////////////
-
+/*
+ * Respond to GET requests to /register
+ */
 app.get("/register", checkAuthenticated, (req, res)=>{
   res.render("pages/register");
 });
 
+
+/*
+ * POST request to database with user registration data
+ */
 app.post("/register", async (req,res)=>{
   let {username, email, password, password2} = req.body;
   console.log({
@@ -210,10 +174,16 @@ app.post("/register", async (req,res)=>{
   }
 });
 
+/*
+ * Respond to GET requests to /login
+ */
 app.get("/login",checkAuthenticated, (req, res)=>{
   res.render("pages/login");
 });
 
+/*
+ * AUthenticate login
+ */
 app.post('/login', passport.authenticate("local",{
   successRedirect: "/mainpage",
   session:true,
@@ -228,6 +198,9 @@ function checkAuthenticated(req,res,next){
   next();
 }
 
+/*
+ * Redirect to login in authentication fails
+ */
 function checkNotAuthenticated(req,res,next){
   if(req.isAuthenticated()){
     return next();
@@ -235,6 +208,9 @@ function checkNotAuthenticated(req,res,next){
   res.redirect('/login');
 }
 
+/*
+ * Redirect to landing page if login is successful
+ */
 app.get("/mainpage",checkNotAuthenticated, (req, res)=>{
   res.render("pages/mainpage", {user: req.user.username});
 });
