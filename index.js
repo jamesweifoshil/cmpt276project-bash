@@ -182,7 +182,7 @@ app.get("/login",checkAuthenticated, (req, res)=>{
 });
 
 /*
- * AUthenticate login
+ * Authenticate login
  */
 app.post('/login', passport.authenticate("local",{
   successRedirect: "/mainpage",
@@ -190,6 +190,13 @@ app.post('/login', passport.authenticate("local",{
   failureRedirect: "/login",
   failureFlash: true
 }));
+
+/*
+ * Redirect to /fileUpload.html
+ */
+app.post('/fileUpload', function(req, res) {
+  res.redirect('/fileUpload.html');
+});
 
 function checkAuthenticated(req,res,next){
   if(req.isAuthenticated()){
