@@ -28,13 +28,15 @@ app.use(
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(flash());
-  
-  
-  app.use(express.static(path.join(__dirname, 'public')))
-  app.set('views', path.join(__dirname, 'views'))
-  app.set('view engine', 'ejs')
-  app.get('/', (req, res) => res.render('pages/login'))
-  
+
+
+app.use(express.static(path.join(__dirname, 'public')))
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'ejs')
+
+app.get('/', (req, res) => res.render('pages/welcome'))
+
+
 /*
 * Configure the AWS region of the target bucket.
 * Remember to change this to the relevant region.
@@ -61,7 +63,7 @@ app.get('/database', (req, res) => {
  * Respond to GET requests to /fileUpload.
  * Upon request, render the 'fileUpload.html' web page in views/ directory.
  */
-app.get('/fileUpload', (req, res) => res.render('fileUpload.html'));
+app.get('/fileUpload', checkNotAuthenticated,(req, res) => res.render('pages/fileUpload'));
 
 /*
  * Respond to GET requests to /sign-s3.
@@ -147,12 +149,6 @@ app.get("/register", checkAuthenticated, (req, res)=>{
 
 app.post("/register", async (req,res)=>{
   let {username, email, password, password2} = req.body;
-  console.log({
-    username,
-    email,
-    password,
-    password2
-  });
   var errors = [];
   if(!username || !email || !password || !password2){
     errors.push({message:"Please enter all fields"});
@@ -176,7 +172,6 @@ app.post("/register", async (req,res)=>{
       if(err){
         res.end(err);
       }
-      console.log(result.rows);
       if(result.rows.length){
         errors.push({message:"Email already taken"});
       }
@@ -187,7 +182,6 @@ app.post("/register", async (req,res)=>{
       if(err){
         res.end(err);
       }
-      console.log(result.rows);
       if(result.rows.length){
         errors.push({message:"Username already taken"});
         res.render("pages/register",{errors});
@@ -198,7 +192,6 @@ app.post("/register", async (req,res)=>{
           if(err){
             res.end(err);
           }
-            console.log(result.rows);
           req.flash('success_msg',"You are now registered. Please log in!");
           res.redirect('/login');
         })

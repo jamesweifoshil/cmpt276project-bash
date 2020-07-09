@@ -2,10 +2,11 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <% include ../partials/header.ejs %>
   </head>
   <body>
-    <a href="/logout">Logout</a>
-    <h1>Hello User <%=user%> </h1>
+    <h1>Hello user <%=user%> </h1>
+    <a class="btn btn-sm btn-danger" href="/logout">Logout</a>
+    <a class="btn btn-sm btn-success" href="./fileUpload">Upload an Avatar Image</a>
   </body>
 </html>

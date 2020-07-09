@@ -1,4 +1,7 @@
 <html>
+  <head>
+  <% include ../partials/header.ejs %>
+  </head>
   <body>
 
     <h1>Edit your account</h1>
@@ -15,13 +18,25 @@
 
     <form method="POST" action="/save-details">
       <input type="hidden" id="avatar-url" name="avatar-url" value="/images/default.png">
-      <input type="text" name="username" placeholder="Username"><br>
-      <input type="text" name="full-name" placeholder="Full name"><br><br>
+
+      <div class="form-group row">
+        <label class="col-form-label col-sm-1">Username</label>
+        <div class="col-sm-2">
+          <input autofocus class="form-control" type="text" id="username" name="username" placeholder="Username"/ required />
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-form-label col-sm-1">Full Name</label>
+        <div class="col-sm-2">
+          <input autofocus class="form-control" type="text" id="full-name" name="full-name" placeholder="Full Name"/ required />
+        </div>
+      </div>
 
       <hr>
       <h2>Save changes</h2>
 
-      <input type="submit" value="Update profile">
+      <input class="btn btn-sm btn-success" type="submit" value="Update profile">
     </form>
 
 
