@@ -34,6 +34,13 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
+function nocache(req, res, next) {
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+  next();
+}
+
 app.get('/', (req, res) => res.render('pages/welcome'))
 
 
@@ -211,7 +218,7 @@ function checkNotAuthenticated(req,res,next){
 /*
  * Redirect to landing page if login is successful
  */
-app.get("/mainpage",checkNotAuthenticated, (req, res)=>{
+app.get("/mainpage",checkNotAuthenticated,nocache, (req, res)=>{
   res.render("pages/mainpage", {user: req.user.username});
 });
 
