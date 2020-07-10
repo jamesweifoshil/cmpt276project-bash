@@ -231,7 +231,7 @@ app.post('/fileUpload', function(req, res) {
  * Redirect to landing page if login is successful
  */
 app.get("/mainpage",checkNotAuthenticated,nocache, (req, res)=>{
-  res.render("pages/mainpage", {user: req.user.username});
+  res.render("pages/mainpage", {user: req.user});
 });
 
 app.get('/logout', (req, res)=>{
