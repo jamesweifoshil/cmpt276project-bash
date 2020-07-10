@@ -7,12 +7,9 @@
   </head>
   <body>
     <h1>Hello user <%=user%> </h1>
-    <script>
-    if(user == 'admin')
-    {
-      document.write("<h2>Database Results</h2>")
-    }
-    </script>
+    <% if (user == 'admin') { %>
+      <h2>You are in Administrator view</h2>
+    <% } %>
     <a class="btn btn-sm btn-danger" href="/logout">Logout</a>
     <a class="btn btn-sm btn-success" href="./fileUpload">Upload an Avatar Image</a>
   </body>
