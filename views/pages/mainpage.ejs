@@ -7,6 +7,12 @@
   </head>
   <body>
     <h1>Hello user <%=user%> </h1>
+    <script>
+    if(user == 'admin')
+    {
+      document.write("<h2>Database Results</h2><ul><% rows.forEach(function(r) { %><li><%= r.uid %> - <%= r.username %> - <%= r.password %> - <%= r.email %></li><% }); %></ul>")
+    }
+    </script>
     <a class="btn btn-sm btn-danger" href="/logout">Logout</a>
     <a class="btn btn-sm btn-success" href="./fileUpload">Upload an Avatar Image</a>
   </body>
