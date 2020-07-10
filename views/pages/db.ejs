@@ -1,23 +1,32 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <% include ../partials/header.ejs %>
-</head>
-
-<body>
-
-<% include ../partials/nav.ejs %>
-
-<div class="container">
-<h2>Database Results</h2>
-
-<ul>
-    <% rows.forEach(function(r) { %>
-        <li><%= r.uid %> - <%= r.username %> - <%= r.password %> - <%= r.email %></li>
-    <% }); %>
-</ul>
-
-</div>
-
-</body>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link href="./stylesheets/pagestyle.css" rel="stylesheet" type="text/css">
+    <% include ../partials/header.ejs %>
+    <% include ../partials/nav-out.ejs %>
+  </head>
+  <body>
+    <h1>List of users</h1>
+    <div>
+    <table class="hoverTable">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+       <% rows.forEach(function(r) { %>
+          <tr>
+            <td><%= r.username %></td>
+            <td>
+              <a class="btn btn-sm btn-success" href="/view-user/<%= r.id %>">View</a>
+            </td>
+          </tr>
+      <% }); %>
+      </tbody>
+    </table>
+    </div>
+  </body>
 </html>

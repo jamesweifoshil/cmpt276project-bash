@@ -32,7 +32,8 @@ function initialize (passport){
     new LocalStrategy(
       {
         usernameField:"username",
-        passwordFiled:"password"
+        passwordFiled:"password",
+        session:true
       },
       authenticateUser
     )

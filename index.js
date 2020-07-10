@@ -34,6 +34,9 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
+/*
+* Prevent user from going back action in the browser after logging out
+*/
 function nocache(req, res, next) {
   res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
   res.header('Expires', '-1');
@@ -41,8 +44,35 @@ function nocache(req, res, next) {
   next();
 }
 
-app.get('/', (req, res) => res.render('pages/welcome'))
+/*
+*Check role before enter administator right web pages
+*/
+function checkRole(role){
+  return (req, res, next) =>{
+    if(req.user.role !== role){
+      res.status(401);
+      return res.send('Not allowed');
+    }
+    next();
+  }
+}
 
+function checkAuthenticated(req,res,next){
+  if(req.isAuthenticated()){
+    return res.redirect('/mainpage');
+  }
+  next();
+}
+
+/*
+ * Redirect to login in authentication fails
+ */
+function checkNotAuthenticated(req,res,next){
+  if(req.isAuthenticated()){
+    return next();
+  }
+  res.redirect('/login');
+}
 
 /*
 * Configure the AWS region of the target bucket.
@@ -55,22 +85,8 @@ app.get('/', (req, res) => res.render('pages/welcome'))
 */
 const S3_BUCKET = process.env.S3_BUCKET;
 
-app.get('/database', (req, res) => {
-  var getUsersQuery = `SELECT * FROM usr`;
-  pool.query(getUsersQuery, (error, result) => {
-     if (error) {
-       res.end(error);
-     }
-     var results = {'rows':result.rows};
-     res.render('pages/db', results);
-  })
-})
 
-/*
- * Respond to GET requests to /fileUpload.
- * Upon request, render the 'fileUpload' web page in views/ directory.
- */
-app.get('/fileUpload', checkNotAuthenticated,(req, res) => res.render('pages/fileUpload'));
+
 
 /*
  * Respond to GET requests to /sign-s3.
@@ -105,6 +121,8 @@ app.get('/sign-s3', (req, res) => {
     res.end();
   });
 });
+
+app.get('/', (req, res) => res.render('pages/welcome'))
 
 app.post('/save-details', (req, res) => {
   // TODO: Read POSTed form data and do something useful
@@ -184,36 +202,30 @@ app.get("/login",checkAuthenticated, (req, res)=>{
 /*
  * Authenticate login
  */
-app.post('/login', passport.authenticate("local",{
-  successRedirect: "/mainpage",
-  session:true,
-  failureRedirect: "/login",
-  failureFlash: true
-}));
+ app.post('/login',
+ passport.authenticate('local', {
+     successRedirect: '/mainpage',
+     failureRedirect: '/login',
+     failureFlash: true
+ })
+);
 
-/*
- * Redirect to /fileUpload.html
- */
-app.post('/fileUpload', function(req, res) {
-  res.redirect('/fileUpload.html');
+app.get("/admin",checkNotAuthenticated, checkRole('admin'), nocache, (req, res)=>{
+  res.render("pages/admin");
 });
 
-function checkAuthenticated(req,res,next){
-  if(req.isAuthenticated()){
-    return res.redirect('/mainpage');
-  }
-  next();
-}
+/*
+ * Respond to GET requests to /fileUpload.
+ * Upon request, render the 'fileUpload' web page in views/ directory.
+ */
+app.get('/fileUpload', checkNotAuthenticated, nocache, (req, res) => res.render('pages/fileUpload'));
 
 /*
- * Redirect to login in authentication fails
+ * Redirect to /fileUpload
  */
-function checkNotAuthenticated(req,res,next){
-  if(req.isAuthenticated()){
-    return next();
-  }
-  res.redirect('/login');
-}
+app.post('/fileUpload', function(req, res) {
+  res.redirect('pages/fileUpload');
+});
 
 /*
  * Redirect to landing page if login is successful
@@ -228,4 +240,36 @@ app.get('/logout', (req, res)=>{
   res.redirect('/login');
 })
 
+app.get('/db', checkNotAuthenticated, checkRole('admin'), nocache, (req, res)=>{
+  let getUserQuery = 'SELECT * FROM usr WHERE username <> \'admin\';';
+  pool.query(getUserQuery,(error, result)=>{
+    if(error)
+      res.end(error);
+    let results = {'rows':result.rows};
+    res.render('pages/db', results);
+  });
+});
+
+app.get('/view-user/:id', checkNotAuthenticated, checkRole('admin'), nocache, (req,res)=>{
+  var id = req.params.id;
+  var getUserQuery = "SELECT * FROM usr WHERE id = $1";
+  pool.query(getUserQuery,[id],(error, result)=>{
+    if(error){
+      res.end(error);
+    }
+    var results = {'rows':result.rows[0]};
+    res.render('pages/view-user', results);
+  });
+});
+
+app.post('/delete-user/:id',(req,res)=>{
+  var id = req.params.id;
+  var deleteUserQuery = 'DELETE FROM usr WHERE id = $1';
+  pool.query(deleteUserQuery,[id],(error,result)=>{
+    if(error){
+      res.end(error);
+    }
+    res.redirect('/db');
+  })
+})
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
