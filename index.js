@@ -5,8 +5,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
 const PORT = process.env.PORT || 5000
-var app = express();
-
+const { exec } = require('child_process');
 const { pool } = require("./dbConfig");
 const initializePassport = require('./passportConfig');
 const session = require('express-session');
@@ -16,6 +15,8 @@ const bcrypt = require("bcrypt");
 initializePassport(passport);
 
 
+
+var app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended:false}));
@@ -34,6 +35,55 @@ app.use(
 app.use(express.static(path.join(__dirname, 'public')))
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
+
+/*
+//Testing
+///////////////////////////
+
+const Terminal = require("./public/script/terminal.class.js");
+let terminalServer = new Terminal({
+    role: "server",
+    shell: (process.platform === "win32") ? "cmd.exe" : "bash",
+    port: 3000
+});
+
+terminalServer.onclosed = (code, signal) => {
+    console.log("Terminal closed - "+code+", "+signal);
+    app.quit();
+};
+terminalServer.onopened = () => {
+    console.log("Connected to remote");
+};
+terminalServer.onresized = (cols, rows) => {
+    console.log("Resized terminal to "+cols+"x"+rows);
+};
+terminalServer.ondisconnected = () => {
+    console.log("Remote disconnected");
+};
+
+//////////////////////////////////////
+*/
+
+
+//open socket to receive commands and send output to front-end
+const WebSocket = require('ws')
+const wss = new WebSocket.Server({ port: 8080 })
+
+wss.on('connection', ws => {
+  ws.on('message', message => {
+    console.log(`Received message => ${message}`)
+    exec(message, (err, stdout, stderr) => {
+      if (err) {
+        console.error(err)
+      } else {
+       console.log(`stdout:${stdout}`);
+       console.log(`stderr:${stderr}`);
+       ws.send(stdout);
+      // ws.send(stderr);
+      }
+    });
+  });
+})
 
 /*
 * Prevent user from going back action in the browser after logging out

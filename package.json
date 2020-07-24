@@ -8,10 +8,17 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node test.js"
+    "test": "node test.js",
+    "rebuild": "electron-rebuild -f -w node-pty"
   },
   "dependencies": {
+<<<<<<< HEAD
     "aws-sdk": "^2.719.0",
+||||||| merged common ancestors
+    "body-parser": "^1.19.0",
+=======
+    "aws-sdk": "^2.0",
+>>>>>>> Terminal
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
@@ -20,15 +27,43 @@
     "express": "^4.15.2",
     "express-flash": "0.0.2",
     "express-session": "^1.17.1",
+<<<<<<< HEAD
     "multer": "^1.4.2",
+||||||| merged common ancestors
+=======
+    "multer": "^1.4.2",
+    "node-pty": "^0.9.0",
+    "nodemon": "^2.0.4",
+>>>>>>> Terminal
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+<<<<<<< HEAD
     "pg": "^8.3.0",
     "session-file-store": "^1.4.0"
+||||||| merged common ancestors
+    "session-file-store": "^1.4.0",
+    "aws-sdk": "^2.0"
+=======
+    "pg": "^8.2.1",
+    "session-file-store": "^1.4.0",
+    "ws": "^7.3.0",
+    "xterm": "^4.7.0"
+>>>>>>> Terminal
   },
   "devDependencies": {
+<<<<<<< HEAD
     "got": "^11.5.1",
     "tape": "^4.7.0"
+||||||| merged common ancestors
+    "got": "^11.3.0",
+    "tape": "^4.7.0"
+=======
+    "electron-rebuild": "^1.11.0",
+    "got": "^11.3.0",
+    "tape": "^4.7.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
+>>>>>>> Terminal
   },
   "repository": {
     "type": "git",
