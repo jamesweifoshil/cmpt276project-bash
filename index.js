@@ -35,6 +35,9 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
+var Connection = require('ssh2');
+var conn = new Connection();
+var http = require('http');
 /*
 //Testing
 ///////////////////////////
@@ -67,21 +70,38 @@ terminalServer.ondisconnected = () => {
 //open socket to receive commands and send output to front-end
 const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 8080 })
-
+var server = http.Server(app);
+var ssh2ConnectionControl = false;
 wss.on('connection', ws => {
+  if(!ssh2ConnectionControl)
+  {
+    conn.connect({
+      host:'13.90.229.109',
+      port: 22,
+      username:'khoatxp',
+      password:'Cmpt276Bash123@'
+    });
+    ssh2ConnectionControl=true;
+  }
   ws.on('message', message => {
     console.log(`Received message => ${message}`)
-    exec(message, (err, stdout, stderr) => {
+    conn.exec(message, (err, stream) => {
       if (err) {
         console.error(err)
       } else {
-       console.log(`stdout:${stdout}`);
-       console.log(`stderr:${stderr}`);
-       ws.send(stdout);
+      stream.on('data',function(data){
+        console.log("STDOUT: "+data);
+        ws.send(data+"");
+      });
+      stream.stderr.on('data',data=>{
+        console.log("STDERR: "+data);
+      })
+     // ws.send(message.utf8Data);
       // ws.send(stderr);
       }
     });
   });
+
 })
 
 /*
@@ -277,6 +297,9 @@ app.post('/fileUpload', function(req, res) {
   res.redirect('pages/fileUpload');
 });
 
+app.get('/demo', function(req, res) {
+  res.render('pages/demo');
+});
 /*
  * Redirect to landing page if login is successful
  */

@@ -75,7 +75,7 @@
        });
        const ws = new WebSocket("ws://localhost:8080", "echo-protocol");
        ws.onmessage = msg => {
-         console.log(msg.data);
+         console.log(msg);
          var output = msg.data.split("\n")
          for (var x=0; x<output.length; x++ ){
            term.write(output[x]+"\r\n");
