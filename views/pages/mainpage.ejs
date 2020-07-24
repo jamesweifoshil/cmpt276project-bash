@@ -62,12 +62,14 @@
   
   <!-- <script src="/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script> -->
   <script>
-      var editor = ace.edit("editor");
-      editor.setTheme("ace/theme/monokai");
-      editor.session.setMode("ace/mode/javascript");
+      var editor = ace.edit("editor", {
+                theme: "ace/theme/monokai",
+                mode: "ace/mode/javascript",
+                placeholder: "choose file to edit"
+            }); 
 
       function openCode(files) {
-          var file = files[0]
+          var file = files[0];
           if (!file) return;
           var modelist = ace.require("ace/ext/modelist")
           var modeName = modelist.getModeForPath(file.name).mode 
