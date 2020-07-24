@@ -3,6 +3,7 @@ const multer = require('multer');
 const aws = require('aws-sdk');
 const bodyParser = require('body-parser');
 const path = require('path');
+const fs = require('fs');
 const PORT = process.env.PORT || 5000
 var app = express();
 
@@ -272,4 +273,9 @@ app.post('/delete-user/:id',(req,res)=>{
     res.redirect('/db');
   })
 })
+
+app.post('/saveEditorText', (req,res)=> {
+  var textEditorArray = req.body.textEditorArray
+})
+
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
