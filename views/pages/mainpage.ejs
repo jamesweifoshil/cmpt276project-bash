@@ -26,24 +26,32 @@
     <% }else { %>
       <h1>Hello user <%=user.username%> </h1>
     <% } %>
-    <a class="btn btn-sm btn-danger" href="/logout">Logout</a>
-    <a class="btn btn-sm btn-success" href="./fileUpload">Upload an Avatar Image</a>
- 
-
-
-
-
+    <div id="editnav" class="container-fluid text-center">
+      <div class="row">
+        <a class="btn btn-sm btn-danger pull-left col-xs-2" href="/logout">Logout</a>
+        <a class="btn btn-sm btn-success pull-left col-xs-2" href="./fileUpload">Upload an Avatar Image</a>
+        <input class="btn btn-sm btn-warning pull-left col-xs-2" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
+      </div>
+      <!-- <input class="btn btn-sm btn-warning" type="button" id="downloadbtn" onclick="downloadHTML()" value="Download"> -->
+    </div>
 
     <!-- Ace text-editor package: https://ace.c9.io/#nav=about -->
-    <div>
-  
-    <div class="form-group row" id="editor">function foo(items) {
+    <div id="editor" class="pull-left">function foo(items) {
         var x = "All this is syntax highlighted";
         return x;
     }</div>
-  </div>
+
+
+    <!-- <form action="/saveEditorText" method="post">
+      <div class="">
+        <input id="saveEditorText" name="editorText" type="submit" value="">
+      </div>
+    </form> -->
+      
 
     <!-- Theme CDNs for ACE text editor  -->
+    <script src="https://ajaxorg.github.io/ace-builds/src/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajaxorg.github.io/ace-builds/src/ext-modelist.js" type="text/javascript" charset="utf-8"></script>
   <script src="https://pagecdn.io/lib/ace/1.4.12/ace.min.js" crossorigin="anonymous" integrity="sha256-T5QdmsCQO5z8tBAXMrCZ4f3RX8wVdiA0Fu17FGnU1vU=" ></script>
   
   <script src="https://pagecdn.io/lib/ace/1.4.12/theme-monokai.min.js" crossorigin="anonymous"  ></script>
@@ -57,9 +65,32 @@
   
   <!-- <script src="/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script> -->
   <script>
-      var editor = ace.edit("editor");
-      editor.setTheme("ace/theme/monokai");
-      editor.session.setMode("ace/mode/javascript");
+      var editor = ace.edit("editor", {
+                theme: "ace/theme/monokai",
+                mode: "ace/mode/javascript",
+                placeholder: "choose file to edit"
+            }); 
+
+      function openCode(files) {
+          var file = files[0];
+          if (!file) return;
+          var modelist = ace.require("ace/ext/modelist")
+          var modeName = modelist.getModeForPath(file.name).mode 
+          editor.session.setMode(modeName)
+          reader = new FileReader();
+          reader.onload = function() {
+              editor.session.setValue(reader.result)
+          }  
+          reader.readAsText(file) 
+      }
+
+      //Store all ines of text from ace text editor in an array
+      var myArray = editor.session.getDocument().$lines;
+
+      
+      //write code array to file...
+      //const fs = require('fs');
+
   </script>
 
 
