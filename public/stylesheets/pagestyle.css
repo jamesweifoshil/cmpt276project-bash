@@ -1,0 +1,16 @@
+.hoverTable{
+width:100%;
+border-collapse:collapse;
+}
+.hoverTable td{
+padding:10px;
+}
+
+.hoverTable tr{
+background: white;
+border-bottom: 1px solid #ddd;
+}
+
+.hoverTable tr:hover {
+      background-color: #ffff99;
+}
