@@ -1,3 +1,4 @@
+ 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
@@ -70,7 +71,6 @@
                 mode: "ace/mode/javascript",
                 placeholder: "choose file to edit"
             }); 
-
       function openCode(files) {
           var file = files[0];
           if (!file) return;
@@ -83,14 +83,11 @@
           }  
           reader.readAsText(file) 
       }
-
       //Store all ines of text from ace text editor in an array
       var myArray = editor.session.getDocument().$lines;
-
       
       //write code array to file...
       //const fs = require('fs');
-
   </script>
 
 
@@ -106,7 +103,7 @@
        });
        const ws = new WebSocket("ws://localhost:8080", "echo-protocol");
        ws.onmessage = msg => {
-         console.log(msg);
+         console.log(msg.data);
          var output = msg.data.split("\n")
          for (var x=0; x<output.length; x++ ){
            term.write(output[x]+"\r\n");
@@ -145,3 +142,4 @@
      </script>
   </body>
 </html>
+
