@@ -70,10 +70,19 @@ terminalServer.ondisconnected = () => {
 
 //open socket to receive commands and send output to front-end
 const WebSocket = require('ws')
-const wss = new WebSocket.Server({ port: 8080 })
 var server = http.Server(app);
+const wss = new WebSocket.Server({ port: 8080 },
+  {
+    verifyClient: (info,done)=>{
+      sessionParser(info.req,{},()=>{
+        done(info.req.session)
+      })
+    }
+  },server)
+
 var ssh2ConnectionControl = false;
-wss.on('connection', ws => {
+wss.on('connection', (ws,req) => {
+  console.log(req.session);
   if(!ssh2ConnectionControl)
   {
     conn.connect({
@@ -96,6 +105,7 @@ wss.on('connection', ws => {
       });
       stream.stderr.on('data',data=>{
         console.log("STDERR: "+data);
+        ws.send(data+"");
       })
      // ws.send(message.utf8Data);
       // ws.send(stderr);

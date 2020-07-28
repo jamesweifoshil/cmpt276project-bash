@@ -101,7 +101,7 @@
        var term = new Terminal({
          cursorBlink: "block"
        });
-       const ws = new WebSocket("ws://localhost:8080", "echo-protocol");
+       const ws = new WebSocket(location.protocol.replace('http', 'ws') + '//' + location.hostname + (location.port ? (':' + 8080) : '') + '/');
        ws.onmessage = msg => {
          console.log(msg.data);
          var output = msg.data.split("\n")
