@@ -39,48 +39,53 @@ app.set('view engine', 'ejs')
 var Connection = require('ssh2');
 var conn = new Connection();
 var http = require('http');
-/*
-//Testing
-///////////////////////////
-
-const Terminal = require("./public/script/terminal.class.js");
-let terminalServer = new Terminal({
-    role: "server",
-    shell: (process.platform === "win32") ? "cmd.exe" : "bash",
-    port: 3000
-});
-
-terminalServer.onclosed = (code, signal) => {
-    console.log("Terminal closed - "+code+", "+signal);
-    app.quit();
-};
-terminalServer.onopened = () => {
-    console.log("Connected to remote");
-};
-terminalServer.onresized = (cols, rows) => {
-    console.log("Resized terminal to "+cols+"x"+rows);
-};
-terminalServer.ondisconnected = () => {
-    console.log("Remote disconnected");
-};
-
-//////////////////////////////////////
-*/
-
 
 //open socket to receive commands and send output to front-end
 const WebSocket = require('ws')
 var server = http.Server(app);
-const wss = new WebSocket.Server({ port: 8080 },
+server.listen(8080);
+const wss = new WebSocket.Server({ server:server },
   {
     verifyClient: (info,done)=>{
       sessionParser(info.req,{},()=>{
         done(info.req.session)
       })
     }
-  },server)
+  });
 
 var ssh2ConnectionControl = false;
+/*
+wss.on('request', req =>{
+  var wsconnection = req.accept('echo-protocol',req.origin);
+  console.log("Connection accepted");
+  if(!ssh2ConnectionControl){
+    conn.connect({
+      host:'13.90.229.109',
+      port: 22,
+      username:'khoatxp',
+      password:'Cmpt276Bash123@'
+    });
+    ssh2ConnectionControl=true;
+  }
+  wsconnection.on('message', message => {
+    console.log(`Received message => ${message}`)
+    conn.exec(message, (err, stream) => {
+      if (err) {
+        console.error(err)
+      } else {
+        stream.on('data',function(data){
+          console.log("STDOUT: "+data);
+          ws.send(data+"");
+        });
+        stream.stderr.on('data',data=>{
+          console.log("STDERR: "+data);
+          ws.send(data+"");
+        });
+      }
+    });
+  });
+})
+*/
 wss.on('connection', (ws,req) => {
   console.log(req.session);
   if(!ssh2ConnectionControl)
@@ -99,16 +104,14 @@ wss.on('connection', (ws,req) => {
       if (err) {
         console.error(err)
       } else {
-      stream.on('data',function(data){
-        console.log("STDOUT: "+data);
-        ws.send(data+"");
-      });
-      stream.stderr.on('data',data=>{
-        console.log("STDERR: "+data);
-        ws.send(data+"");
-      })
-     // ws.send(message.utf8Data);
-      // ws.send(stderr);
+        stream.on('data',function(data){
+          console.log("STDOUT: "+data);
+          ws.send(data+"");
+        });
+        stream.stderr.on('data',data=>{
+          console.log("STDERR: "+data);
+         ws.send(data+"");
+        })
       }
     });
   });

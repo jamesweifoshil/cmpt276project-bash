@@ -101,7 +101,8 @@
        var term = new Terminal({
          cursorBlink: "block"
        });
-       const ws = new WebSocket(location.protocol.replace('http', 'ws') + '//' + location.hostname + ':'+8080 + '/');
+       wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.hostname+":"+8080+"/mainpage";
+       const ws = new WebSocket(wsURL);
        ws.onmessage = msg => {
          console.log(msg.data);
          var output = msg.data.split("\n")
