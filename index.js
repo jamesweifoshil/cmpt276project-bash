@@ -12,11 +12,14 @@ const session = require('express-session');
 const flash = require('express-flash');
 const passport = require('passport');
 const bcrypt = require("bcrypt");
+var cors = require('cors') // cross-origin resource sharing
+
 initializePassport(passport);
 
 
 
 var app = express();
+
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended:false}));
@@ -27,14 +30,14 @@ app.use(
     saveUninitialized: false,
   })
   );
-  app.use(passport.initialize());
-  app.use(passport.session());
-  app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use("/", cors());
 
-
-app.use(express.static(path.join(__dirname, 'public')))
-app.set('views', path.join(__dirname, 'views'))
-app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 var Connection = require('ssh2');
 var conn = new Connection();
@@ -320,7 +323,29 @@ app.get('/db', checkNotAuthenticated, checkRole('admin'), nocache, (req, res)=>{
     if(error)
       res.end(error);
     let results = {'rows':result.rows};
+    res.json(results);
     res.render('pages/db', results);
+  });
+});
+
+
+// For testing
+app.get('/getAllUsers', (req, res)=>{
+  let getUserQuery = 'SELECT * FROM usr;';
+  pool.query(getUserQuery,(error, result)=>{
+    if(error)
+      res.end(error);
+    let results = result.rows;
+    res.json(results);
+  });
+});
+
+app.post('/deleteUser', (req, res)=>{
+  let username = req.body;
+  let getUserQuery = `DELETE FROM usr where username='${username}';`;
+  pool.query(getUserQuery,(error, result)=>{
+    if(error)
+      res.end(error);
   });
 });
 
@@ -352,3 +377,5 @@ app.post('/saveEditorText', (req,res)=> {
 })
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
+
+module.exports = app;
