@@ -5,8 +5,10 @@
     <meta charset="utf-8">
     <% include ../partials/header.ejs %>
     <% include ../partials/nav-out.ejs %>
-    <link rel="stylesheet" href="/stylesheets/xterm.css" />
-    <script src="./script/xterm.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/addons/attach/attach.js"></script>
+
 
     <!-- <link rel="stylesheet" href="/public/stylesheets/mainPage.css"> -->
     <style type="text/css" media="screen">
@@ -17,7 +19,7 @@
           right: 2%;
           bottom: 2%;
           left: 2%;
-          margin-top: 680px;
+          margin-top: 800px;
       }
     </style>
   </head>
@@ -31,7 +33,7 @@
       <div class="row">
         <a class="btn btn-sm btn-danger pull-left col-xs-2" href="/logout">Logout</a>
         <a class="btn btn-sm btn-success pull-left col-xs-2" href="./fileUpload">Upload an Avatar Image</a>
-        <input class="btn btn-sm btn-warning pull-left col-xs-2" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
+        
       </div>
       <!-- <input class="btn btn-sm btn-warning" type="button" id="downloadbtn" onclick="downloadHTML()" value="Download"> -->
     </div>
@@ -83,7 +85,7 @@
           }  
           reader.readAsText(file) 
       }
-      //Store all ines of text from ace text editor in an array
+      //Store all lines of text from ace text editor in an array
       var myArray = editor.session.getDocument().$lines;
       
       //write code array to file...
@@ -94,14 +96,31 @@
 
 
      <h3>Terminal</h3>
+     
+     <ul>
+       Upload file to server to compile and execute:
+       <form action="/terminal" method="post" enctype="multipart/form-data">
+        <input class="btn btn-sm btn-warning" type="file" name="terminalFile">
+        <input class="btn btn-sm btn-info" type="submit" value="Submit" > 
+      </form> 
+     </ul>
+    
      <div id="terminal"></div>
      <div><h3>Text editor</h3></div>
      
+     <ul>
+       Upload file to text editor:
+       
+       <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
+       
+     </ul>
      <script>
+       
        var term = new Terminal({
          cursorBlink: "block"
        });
-       wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.hostname+":"+8080+"/mainpage";
+        
+       wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.hostname+":"+8080;
        const ws = new WebSocket(wsURL);
        ws.onmessage = msg => {
          console.log(msg.data);
@@ -109,6 +128,7 @@
          for (var x=0; x<output.length; x++ ){
            term.write(output[x]+"\r\n");
          }
+         term.write("$ ");
          curr_line = "";
        };
        term.open(document.getElementById('terminal'));
@@ -133,13 +153,28 @@
            term.write(evt.key);
          }
        });
- /*
+/*
        // paste value
        term.addEventListener('paste',data=>{
          curr_line += data;
          term.write(data);
        });
- */
+ 
+
+
+ term.open(document.getElementById('terminal'));
+
+var ws = new WebSocket(location.protocol.replace('http', 'ws') + '//' + location.hostname + (location.port ? (':' + 8080) : '') + '/');
+
+ws.onopen = function() {
+  new attach.attach(term, ws);
+};
+
+ws.onerror = function(e) {
+  console.log(e);
+};
+*/
+
      </script>
   </body>
 </html>
