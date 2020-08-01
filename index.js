@@ -48,21 +48,7 @@ conn.on('connect',()=>{console.log('connected')})
 conn.on('end', function() {
   console.log('SSH - Connection Closed');
 });
-/*
-conn.on('ready', function() {
-  conn.sftp(function(err, sftp) {
-      if (err) throw err;
-      var moveFrom = "/remote/file/path/file.txt";
-      var moveTo = "/local/file/path/file.txt";
-  
-      sftp.fastGet(moveFrom, moveTo , {}, function(downloadError){
-          if(downloadError) throw downloadError;
-  
-          console.log("Succesfully uploaded");
-      });
-  });
-  }).connect(connSettings);
-*/
+
 
 
 /*
