@@ -373,6 +373,7 @@ app.post('/saveEditorText', (req,res)=> {
 
 app.post('/terminal',(req,res)=>{
   console.log(req.user);
+  //Use multiparty to parse the choose file form
   var form = new multiparty.Form();
   form.parse(req, (err,fields,files)=>{
     console.log(files.terminalFile[0].path);
@@ -381,7 +382,7 @@ app.post('/terminal',(req,res)=>{
       host: '13.90.229.109',
       port: 22,
       username: req.user.username,
-      password: 'Cmpt276Bash123@'
+      password: req.user.password
     },'once').then(()=>{
       sftp.fastPut(files.terminalFile[0].path,'/home/'+req.user.username+'/'+files.terminalFile[0].originalFilename,{}).then(()=>{
         sftp.end();
