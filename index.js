@@ -12,6 +12,7 @@ const session = require('express-session');
 const flash = require('express-flash');
 const passport = require('passport');
 const bcrypt = require("bcrypt");
+'use strict';
 initializePassport(passport);
 
 
@@ -36,9 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
-var Connection = require('ssh2');
-var conn = new Connection();
-var http = require('http');
+
 /*
 //Testing
 ///////////////////////////
@@ -68,13 +67,19 @@ terminalServer.ondisconnected = () => {
 */
 
 
+
+var Connection = require('ssh2');
+var conn = new Connection();
+var http = require('http');
+
+
 //open socket to receive commands and send output to front-end
 const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 8080 })
 var server = http.Server(app);
 var ssh2ConnectionControl = false;
-wss.on('connection', ws => {
-  if(!ssh2ConnectionControl)
+
+if(!ssh2ConnectionControl)
   {
     conn.connect({
       host:'13.90.229.109',
@@ -84,6 +89,8 @@ wss.on('connection', ws => {
     });
     ssh2ConnectionControl=true;
   }
+wss.on('connection', ws => {
+  
   ws.on('message', message => {
     console.log(`Received message => ${message}`)
     conn.exec(message, (err, stream) => {
@@ -101,9 +108,68 @@ wss.on('connection', ws => {
       // ws.send(stderr);
       }
     });
-  });
-
+      
+      
+      
+    
+  });  
+    
+       
+   
+    
+//    ssh2_scp_send($resource_connection, 'C:/Users/chopr/Desktop/cmpt276/assignment second/index.js', '/home/khoatxp', 0644);
+    
 })
+
+
+
+
+
+  
+ 
+    // Example of using the uploadDir() method to upload a directory
+    // to a remote SFTP server
+ 
+    
+    const SftpClient = require('ssh2-sftp-client');
+ 
+    const dotenvPath = path.join(__dirname, '..', '.env');
+    require('dotenv').config({path: dotenvPath});
+ 
+    const config = {
+        host:'13.90.229.109',
+        username:'khoatxp',
+        password:'Cmpt276Bash123@',
+        port: 22
+    };
+ 
+    async function main() {
+const client = new SftpClient('upload-test');
+const src = path.join('C:/Users/chopr/Desktop/upload');
+const dst = '/home/khoatxp';
+ //'C:\Users\chopr\Desktop', '..', './hello'
+try {
+  await client.connect(config);
+  client.on('upload', info => {
+    console.log(`Listener: Uploaded ${info.source}`);
+  });
+  let rslt = await client.uploadDir(src, dst);
+  return rslt;
+} finally {
+  client.end();
+}
+    }
+ 
+    main()
+.then(msg => {
+  console.log(msg);
+})
+.catch(err => {
+  console.log(`main error: ${err.message}`);
+});
+
+
+
 
 /*
 * Prevent user from going back action in the browser after logging out
@@ -350,5 +416,10 @@ app.post('/delete-user/:id',(req,res)=>{
 app.post('/saveEditorText', (req,res)=> {
   var textEditorArray = req.body.textEditorArray
 })
+
+
+
+
+
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
