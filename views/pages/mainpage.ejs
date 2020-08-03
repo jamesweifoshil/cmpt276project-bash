@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <% include ../partials/header.ejs %>
     <% include ../partials/nav-out.ejs %>
-<<<<<<< HEAD
     <link rel="stylesheet" href="/stylesheets/xterm.css" />
     <script src="./script/xterm.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"
@@ -13,15 +12,10 @@
             crossorigin="anonymous">
     </script>
     <script type="text/javascript" src="/script/FileSaver.js"></script>
-||||||| merged common ancestors
-    <link rel="stylesheet" href="/stylesheets/xterm.css" />
-    <script src="./script/xterm.js"></script>
-=======
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css" />
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/addons/attach/attach.js"></script>
 
->>>>>>> Terminal
 
     <!-- <link rel="stylesheet" href="/public/stylesheets/mainPage.css"> -->
     <style type="text/css" media="screen">
@@ -46,14 +40,9 @@
       <div class="row">
         <a class="btn btn-sm btn-danger pull-left col-xs-2" href="/logout">Logout</a>
         <a class="btn btn-sm btn-success pull-left col-xs-2" href="./fileUpload">Upload an Avatar Image</a>
-<<<<<<< HEAD
         <input class="btn btn-sm btn-warning pull-left col-xs-2" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
         <input type="button" value="Save" onclick="onWriteClick()"/>
-||||||| merged common ancestors
-        <input class="btn btn-sm btn-warning pull-left col-xs-2" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
-=======
         
->>>>>>> Terminal
       </div>
       <!-- <input class="btn btn-sm btn-warning" type="button" id="downloadbtn" onclick="downloadHTML()" value="Download"> -->
     </div>
@@ -105,16 +94,7 @@
           }  
           reader.readAsText(file) 
       }
-<<<<<<< HEAD
-
-||||||| merged common ancestors
-
-      //Store all ines of text from ace text editor in an array
-=======
-      //Store all lines of text from ace text editor in an array
->>>>>>> Terminal
       var myArray = editor.session.getDocument().$lines;
-<<<<<<< HEAD
       var myArray2 = editor.session.getDocument().$lines;
       var myArrayJSON = JSON.stringify(myArray);
       myArray2.forEach(element => {
@@ -133,10 +113,6 @@
       //     var myTextBlob = editor.session.getDocument().$lines.Blob();
       //     window.saveAs(myTextBlob, "test_file.txt");
       //   }
-||||||| merged common ancestors
-
-=======
->>>>>>> Terminal
       
       //write code array to file...
       //const fs = require('fs');
