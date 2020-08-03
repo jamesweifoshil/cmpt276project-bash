@@ -169,12 +169,13 @@
 
   function writeFileUsingFileSaver() {
     var myArray = editor.session.getDocument().$lines;
-    myArray.forEach(element => {
-      element = element.replace(/([^\r])\n/g, "$1\r\n");
-    });
+    // myArray.forEach(element => {
+    //   element = element.replace(/([^\r])\n/g, "$1\r\n");
+    // });
     
-    var blob = new Blob(myArray, {type:'text/plain',endings:'native'});
-    window.saveAs(blob, "test_file.txt");
+    var blob = new Blob(myArray);
+    // var blob = new Blob(myArray, {type:'javascript',endings:'native'});
+    window.saveAs(blob, "test_file.js");
   }
 
   function onWriteClick() {
