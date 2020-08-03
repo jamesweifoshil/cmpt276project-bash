@@ -12,8 +12,6 @@ const session = require('express-session');
 const flash = require('express-flash');
 const passport = require('passport');
 const bcrypt = require("bcrypt");
-const multiparty = require("multiparty");
-var Client = require('ssh2-sftp-client');
 initializePassport(passport);
 
 var sessionParser = session({
@@ -48,7 +46,21 @@ conn.on('connect',()=>{console.log('connected')})
 conn.on('end', function() {
   console.log('SSH - Connection Closed');
 });
-
+/*
+conn.on('ready', function() {
+  conn.sftp(function(err, sftp) {
+      if (err) throw err;
+      var moveFrom = "/remote/file/path/file.txt";
+      var moveTo = "/local/file/path/file.txt";
+  
+      sftp.fastGet(moveFrom, moveTo , {}, function(downloadError){
+          if(downloadError) throw downloadError;
+  
+          console.log("Succesfully uploaded");
+      });
+  });
+  }).connect(connSettings);
+*/
 
 
 /*
@@ -357,33 +369,6 @@ app.post('/saveEditorText', (req,res)=> {
   var textEditorArray = req.body.textEditorArray
 })
 
-app.post('/terminal',(req,res)=>{
-  console.log(req.user);
-  //Use multiparty to parse the choose file form
-  var form = new multiparty.Form();
-  form.parse(req, (err,fields,files)=>{
-    console.log(files.terminalFile[0].path);
-    var sftp = new Client();
-    sftp.connect({
-      host: '13.90.229.109',
-      port: 22,
-      username: req.user.username,
-      password: req.user.password
-    },'once').then(()=>{
-      sftp.fastPut(files.terminalFile[0].path,'/home/'+req.user.username+'/'+files.terminalFile[0].originalFilename,{}).then(()=>{
-        sftp.end();
-      }).catch((err)=>{
-        sftp.end();
-        console.log(err,'fastPut method error');
-      })
-    }).catch((err)=>{
-      sftp.end();
-      console.log(err,'connect method error');
-    });
-    
-  });
-  res.status(204).send();
-})
 
 
 //open socket to receive commands and send output to front-end
@@ -403,7 +388,7 @@ wss.on('connection', (ws,req) => {
   ws.on('message', message => {
     console.log(`Received message => ${message}`)
     
-    conn.exec(message,{pty:true},(err, stream) => {
+    conn.exec(message, (err, stream) => {
       if (err) {
         console.error(err)
       } else {
