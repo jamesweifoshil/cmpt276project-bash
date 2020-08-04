@@ -160,20 +160,8 @@
          term.write(data);
        });
  
-
-
- term.open(document.getElementById('terminal'));
-
-var ws = new WebSocket(location.protocol.replace('http', 'ws') + '//' + location.hostname + (location.port ? (':' + 8080) : '') + '/');
-
-ws.onopen = function() {
-  new attach.attach(term, ws);
-};
-
-ws.onerror = function(e) {
-  console.log(e);
-};
 */
+
 
      </script>
   </body>
