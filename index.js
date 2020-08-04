@@ -37,18 +37,10 @@ app.set('view engine', 'ejs')
 
 
 var Connection = require('ssh2');
-var conn = new Connection();
 var http = require('http');
 var server = http.createServer(app);
 server.listen(PORT);
-var ssh2ConnectionControl = false;
-conn.on('error', function(err) {
-  console.log('SSH - Connection Error: ' + err);
-});
-conn.on('connect',()=>{console.log('connected')})
-conn.on('end', function() {
-  console.log('SSH - Connection Closed');
-});
+
 
 
 
@@ -149,6 +141,7 @@ app.post('/save-details', (req, res) => {
 /*
  * Respond to GET requests to /register
  */
+var conn = new Connection();
 app.get("/register", checkAuthenticated, (req, res)=>{
   res.render("pages/register");
   conn.connect({
@@ -163,6 +156,7 @@ app.get("/register", checkAuthenticated, (req, res)=>{
  * executeCommand function helps prevent concurrent commands sent to remote server
  * is used with setTimeOut
  */
+
 function executeCommand(command){
   conn.exec(command, (err, stream) => {
     if (err) {
@@ -229,6 +223,7 @@ app.post("/register", async (req,res)=>{
           
           //Automatically add username to remote Linux server with home directory and password
           let command = "sudo adduser --quiet --disabled-password --shell /bin/bash --home /home/"+username+" --gecos \"User\" "+username;
+          
           conn.exec(command, (err, stream) => {
             if (err) {
               console.error(err)
@@ -250,7 +245,7 @@ app.post("/register", async (req,res)=>{
   }
 });
 
-//"echo 'khoatxp:Cmpt276Bash123@' | sudo chpasswd"
+
 /*
  * Respond to GET requests to /login
  */
@@ -294,22 +289,6 @@ app.get('/demo', function(req, res) {
  */
 app.get("/mainpage",checkNotAuthenticated,nocache, (req, res)=>{
   res.render("pages/mainpage", {user: req.user});
-  if(req.user.username === "khoatxp"){
-    conn.connect({
-      host:'13.90.229.109',
-      port: 22,
-      username: req.user.username,
-      password: 'Cmpt276Bash123@'
-    });
-  }
-  else{
-    conn.connect({
-      host:'13.90.229.109',
-      port: 22,
-      username: req.user.username,
-      password: req.user.password
-    });
-  }
 });
 
 app.get('/logout', (req, res)=>{
@@ -359,7 +338,6 @@ app.post('/saveEditorText', (req,res)=> {
 })
 
 app.post('/terminal',(req,res)=>{
-  console.log(req.user);
   //Use multiparty to parse the choose file form
   var form = new multiparty.Form();
   form.parse(req, (err,fields,files)=>{
@@ -388,16 +366,31 @@ app.post('/terminal',(req,res)=>{
 
 
 //open socket to receive commands and send output to front-end
-
-const wss = new WebSocketServer({server:server})
+const wss = new WebSocketServer({server:server,  verifyClient: (info, done) => {
+  sessionParser(info.req, {}, () => {
+    done(info.req.session)
+  })
+}});
 console.log("websocket server created");
 wss.on('connection', (ws,req) => {
-  console.log("websocket connection open")
-  console.log(req.session);
+  console.log("websocket connection open");
+  var sshConnection = new Connection();
+  var getUserQuery = "SELECT * FROM usr WHERE id = $1";
+  pool.query(getUserQuery,[req.session.passport.user],(error, result)=>{
+    if(error){
+      res.end(error);
+    }
+    sshConnection.connect({    
+      host: '13.90.229.109',
+      port: 22,
+      username: result.rows[0].username,
+      password: result.rows[0].password
+    })
+  })
+ 
   ws.on('message', message => {
     console.log(`Received message => ${message}`)
-    
-    conn.exec(message,{pty:true},(err, stream) => {
+    sshConnection.exec(message,{pty:true},(err, stream) => {
       if (err) {
         console.error(err)
       } else {
