@@ -393,6 +393,7 @@ const wss = new WebSocketServer({server:server})
 console.log("websocket server created");
 wss.on('connection', (ws,req) => {
   console.log("websocket connection open")
+  console.log(req.session);
   ws.on('message', message => {
     console.log(`Received message => ${message}`)
     
