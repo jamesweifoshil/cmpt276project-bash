@@ -114,12 +114,6 @@
       }  
       reader.readAsText(file) 
   }
-  var myArray = editor.session.getDocument().$lines;
-  var myArray2 = editor.session.getDocument().$lines;
-  var myArrayJSON = JSON.stringify(myArray);
-  myArray2.forEach(element => {
-    element.concat('\n')
-  });
     
     var term = new Terminal({
       cursorBlink: "block"
@@ -165,9 +159,20 @@
 
   function writeFileUsingFileSaver() {
     var myArray = editor.session.getDocument().$lines;
-    // myArray.forEach(element => {
-    //   element = element.replace(/([^\r])\n/g, "$1\r\n");
-    // });
+    myArray.forEach(element => {
+      element = element.replace(/([^\r])\n/g, "$1\r\n");
+    });
+
+    var myArray2 = editor.session.getDocument().$lines;
+    myArray.forEach(element => {
+      element = element.replace(/([^\r])\n/g, "$1\r\n");
+    });
+
+    for(var i = 1; i < myArray.length; i+=2) {
+      myArray.splice(i,0,'\n');
+    }
+
+    var myArrayJSON = JSON.stringify(myArray);
 
   var blob = new Blob(myArray);
   // var blob = new Blob(myArray, {type:'javascript',endings:'native'});
