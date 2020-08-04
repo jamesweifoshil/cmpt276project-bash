@@ -8,8 +8,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node test.js",
-    "rebuild": "electron-rebuild -f -w node-pty"
+    "test": "node test.js"
   },
   "dependencies": {
     "aws-sdk": "^2.719.0",
@@ -24,24 +23,18 @@
     "http": "0.0.1-security",
     "multer": "^1.4.2",
     "multiparty": "^4.2.2",
-    "node-pty": "latest",
     "nodemon": "^2.0.4",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "pg": "^8.2.1",
-    "session-file-store": "^1.4.0",
     "ssh2": "^0.8.9",
     "ssh2-sftp-client": "^5.2.1",
-    "total.js": "latest",
     "ws": "^7.3.0",
     "xterm": "^4.7.0"
   },
   "devDependencies": {
-    "electron-rebuild": "^1.11.0",
     "got": "^11.3.0",
-    "tape": "^4.7.0",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12"
+    "tape": "^4.7.0"
   },
   "repository": {
     "type": "git",

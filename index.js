@@ -1,11 +1,10 @@
+const WebSocketServer = require("ws").Server;
 const express = require('express');
 const multer = require('multer');
 const aws = require('aws-sdk');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
-const PORT = process.env.PORT || 5000
-//const { exec } = require('child_process');
 const { pool } = require("./dbConfig");
 const initializePassport = require('./passportConfig');
 const session = require('express-session');
@@ -30,7 +29,7 @@ app.use(sessionParser);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-
+const PORT = process.env.PORT || 5000
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.set('views', path.join(__dirname, 'views'))
@@ -40,6 +39,8 @@ app.set('view engine', 'ejs')
 var Connection = require('ssh2');
 var conn = new Connection();
 var http = require('http');
+var server = http.createServer(app);
+server.listen(PORT);
 var ssh2ConnectionControl = false;
 conn.on('error', function(err) {
   console.log('SSH - Connection Error: ' + err);
@@ -387,19 +388,11 @@ app.post('/terminal',(req,res)=>{
 
 
 //open socket to receive commands and send output to front-end
-const WebSocket = require('ws');
-var server = http.Server(app);
-server.listen(8080);
-const wss = new WebSocket.Server({
-  verifyClient: (info, done) => {
-    sessionParser(info.req, {}, () => {
-      done(info.req)
-    })
-  },
-  server
-})
 
+const wss = new WebSocketServer({server:server})
+console.log("websocket server created");
 wss.on('connection', (ws,req) => {
+  console.log("websocket connection open")
   ws.on('message', message => {
     console.log(`Received message => ${message}`)
     
@@ -418,9 +411,9 @@ wss.on('connection', (ws,req) => {
       }
     });
   });
-
+  ws.on("close", function() {
+    console.log("websocket connection close");
+  })
 })
 
 
-
-app.listen(PORT, () => console.log(`Listening on ${ PORT }`))

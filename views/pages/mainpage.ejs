@@ -120,7 +120,7 @@
          cursorBlink: "block"
        });
         
-       wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.hostname+":"+8080;
+       wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host;
        const ws = new WebSocket(wsURL);
        ws.onmessage = msg => {
          console.log(msg.data);
@@ -160,20 +160,8 @@
          term.write(data);
        });
  
-
-
- term.open(document.getElementById('terminal'));
-
-var ws = new WebSocket(location.protocol.replace('http', 'ws') + '//' + location.hostname + (location.port ? (':' + 8080) : '') + '/');
-
-ws.onopen = function() {
-  new attach.attach(term, ws);
-};
-
-ws.onerror = function(e) {
-  console.log(e);
-};
 */
+
 
      </script>
   </body>
