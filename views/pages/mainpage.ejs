@@ -26,7 +26,7 @@
           right: 2%;
           bottom: 2%;
           left: 2%;
-          margin-top: 800px;
+          margin-top: 880px;
       }
     </style>
   </head>
@@ -40,8 +40,6 @@
       <div class="row">
         <a class="btn btn-sm btn-danger pull-left col-xs-2" href="/logout">Logout</a>
         <a class="btn btn-sm btn-success pull-left col-xs-2" href="./fileUpload">Upload an Avatar Image</a>
-        <input class="btn btn-sm btn-warning pull-left col-xs-2" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
-        <input type="button" value="Save" onclick="onWriteClick()"/>
         
       </div>
       <!-- <input class="btn btn-sm btn-warning" type="button" id="downloadbtn" onclick="downloadHTML()" value="Download"> -->
@@ -94,8 +92,12 @@
        Upload file to text editor:
        
        <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
-       
+       <input class="btn btn-sm btn-info" type="button" value="Save" onclick="onWriteClick()"/>
      </ul>
+
+
+
+  
   <script>
   var editor = ace.edit("editor", {
             theme: "ace/theme/monokai",
@@ -125,7 +127,7 @@
       cursorBlink: "block"
     });
     
-    wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.hostname+":"+8080;
+    wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host;
     const ws = new WebSocket(wsURL);
     ws.onmessage = msg => {
       console.log(msg.data);
