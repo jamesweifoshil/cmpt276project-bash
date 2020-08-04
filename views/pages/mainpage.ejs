@@ -120,7 +120,7 @@
          cursorBlink: "block"
        });
         
-       wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host;
+       wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.hostname+":"+8080;
        const ws = new WebSocket(wsURL);
        ws.onmessage = msg => {
          console.log(msg.data);

@@ -389,7 +389,7 @@ app.post('/terminal',(req,res)=>{
 //open socket to receive commands and send output to front-end
 const WebSocket = require('ws');
 var server = http.Server(app);
-server.listen(PORT);
+server.listen(8080);
 const wss = new WebSocket.Server({
   verifyClient: (info, done) => {
     sessionParser(info.req, {}, () => {
@@ -422,3 +422,5 @@ wss.on('connection', (ws,req) => {
 })
 
 
+
+app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
