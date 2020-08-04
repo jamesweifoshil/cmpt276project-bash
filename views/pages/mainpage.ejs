@@ -170,7 +170,9 @@
       element = element.replace(/([^\r])\n/g, "$1\r\n");
     });
 
-    myArray2.splice(2,0,'\n');
+    for(var i = 1; i<myArray2.length; i+2) {
+      myArray2.splice(i,0,'\n');
+    }
 
     var myArrayJSON = JSON.stringify(myArray);
 
