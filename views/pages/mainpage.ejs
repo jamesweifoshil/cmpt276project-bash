@@ -165,8 +165,8 @@
 
   var blob = new Blob(myArray);
   // var blob = new Blob(myArray, {type:'javascript',endings:'native'});
-  var editorFileName = document.getElementById("editorFileName").value;
-  window.saveAs(blob, document.getElementById("editorFileName") + ".js");
+  var editorFileName = document.getElementById('editorFileName').nodeValue;
+  window.saveAs(blob, document.getElementById('editorFileName').nodeValue + ".js");
   }
 
   function onWriteClick() {
