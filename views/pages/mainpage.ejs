@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css" />
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/addons/attach/attach.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 
 
     <!-- <link rel="stylesheet" href="/public/stylesheets/mainPage.css"> -->
@@ -24,7 +25,31 @@
           right: 2%;
           bottom: 2%;
           left: 2%;
-          margin-top: 860px;
+          margin-top: 900px;
+      }
+    </style>
+    <style>
+      body {
+        font-family: helvetica, sans-serif, arial;
+        font-size: 1em;
+        color: #111;
+      }
+      h1 {
+        text-align: center;
+      }
+      #terminal-container {
+        width: 1850px;
+        height: 450px;
+        margin: 0 auto;
+        padding: 2px;
+      }
+      #terminal-container .terminal {
+        background-color: #111;
+        color: #fafafa;
+        padding: 2px;
+      }
+      #terminal-container .terminal:focus .terminal-cursor {
+        background-color: #fafafa;
       }
     </style>
   </head>
@@ -34,15 +59,23 @@
     <% }else { %>
       <h1>Hello user <%=user.username%> </h1>
     <% } %>
-    <div id="editnav" class="container-fluid text-center">
-      <div class="row">
-        <a class="btn btn-sm btn-danger pull-left col-xs-2" href="/logout">Logout</a>
-        <a class="btn btn-sm btn-success pull-left col-xs-2" href="./fileUpload">Upload an Avatar Image</a>
-        
-      </div>
-      <!-- <input class="btn btn-sm btn-warning" type="button" id="downloadbtn" onclick="downloadHTML()" value="Download"> -->
-    </div>
+    <div id="editnav" class="container-fluid text-left">
 
+      <!-- <input class="btn btn-sm btn-warning" type="button" id="downloadbtn" onclick="downloadHTML()" value="Download"> -->
+      <ul>
+        <a class="btn btn-sm btn-danger pull-left col-xs-2" href="/logout">Logout</a>
+        
+      </ul>
+
+    </div>
+    <div id="editnav" class="container-fluid text-left">
+
+      <!-- <input class="btn btn-sm btn-warning" type="button" id="downloadbtn" onclick="downloadHTML()" value="Download"> -->
+      <ul>
+        <a class="btn btn-sm btn-success pull-left col-xs-2" href="./fileUpload">Upload an Avatar Image</a>
+      </ul>
+
+    </div>
     <!-- Ace text-editor package: https://ace.c9.io/#nav=about -->
     <div id="editor" class="pull-left">function foo(items) {
         var x = "All this is syntax highlighted";
@@ -83,7 +116,7 @@
       </form> 
      </ul>
     
-     <div id="terminal"></div>
+     <div id="terminal-container"></div>
      <div><h3>Text editor</h3></div>
      
      <ul>
@@ -115,6 +148,33 @@
       reader.readAsText(file) 
   }
     
+
+  window.addEventListener('load', function() {
+        var terminalContainer = document.getElementById('terminal-container');
+        var term = new Terminal({ cursorBlink: true });
+        term.open(terminalContainer);
+
+        var socket = io.connect();
+        
+        socket.on('connect', function() {
+          term.write('\r\n*** Connected to remote Linux server***\r\n');
+
+          // Browser -> Backend
+          term.on('data', function(data) {
+            socket.emit('data', data);
+          });
+
+          // Backend -> Browser
+          socket.on('data', function(data) {
+            term.write(data);
+          });
+
+          socket.on('disconnect', function() {
+            term.write('\r\n*** Disconnected from remote Linux server***\r\n');
+          });
+        });
+      }, false);
+    /*
     var term = new Terminal({
       cursorBlink: "block"
     });
@@ -153,7 +213,7 @@
       }
     });
 
-
+*/
   $(function() {
   });
 

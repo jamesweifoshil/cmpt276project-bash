@@ -1,4 +1,5 @@
-const WebSocketServer = require("ws").Server;
+
+  const WebSocketServer = require("ws").Server;
 const express = require('express');
 const multer = require('multer');
 const aws = require('aws-sdk');
@@ -19,9 +20,8 @@ initializePassport(passport);
 
 var sessionParser = session({
   secret:"secret",
-  resave: true,
-  saveUninitialized: true,
-  maxAge: 3600000 
+  resave: false,
+  saveUninitialized: false
 });
 
 var app = express();
@@ -42,11 +42,6 @@ app.set('view engine', 'ejs')
 var Connection = require('ssh2');
 var http = require('http');
 var server = http.createServer(app);
-var io = require('socket.io')(server);
-io.use(function(socket, next){
-    // Wrap the express middleware
-    sessionParser(socket.request, {}, next);
-})
 server.listen(PORT);
 
 
@@ -374,39 +369,84 @@ app.post('/terminal',(req,res)=>{
 
 
 //open socket to receive commands and send output to front-end
-io.on('connection', function(socket) {
-    var sshConnection = new Connection();
-    console.log(socket.request.session.passport.user);
-    var getUserQuery = "SELECT * FROM usr WHERE id = $1";
-    pool.query(getUserQuery,[socket.request.session.passport.user],(error, result)=>{
-      if(error){
-        res.end(error);
+const wss = new WebSocketServer({server:server,  verifyClient: (info, done) => {
+  sessionParser(info.req, {}, () => {
+    done(info.req.session)
+  })
+}});
+console.log("websocket server created");
+/*
+wss.on('connection', (ws,req) => {
+  console.log("websocket connection open");
+  var sshConnection = new Connection();
+  var getUserQuery = "SELECT * FROM usr WHERE id = $1";
+  pool.query(getUserQuery,[req.session.passport.user],(error, result)=>{
+    if(error){
+      res.end(error);
+    }
+    sshConnection.connect({    
+      host: '13.90.229.109',
+      port: 22,
+      username: result.rows[0].username,
+      password: result.rows[0].password
+    })
+  })
+ 
+  sshConnection.tty = Pty.spawn('bash', [], { name: 'xterm-color', cols: 80, rows: 24, cwd: process.env.PWD, env: process.env });
+
+  ws.on('message', message => {
+
+    console.log(`Received message => ${message}`)
+    sshConnection.exec(message,{pty:true},(err, stream) => {
+      if (err) {
+        console.error(err)
+      } else {
+        stream.on('data',function(data){
+          console.log("STDOUT: "+data);
+          ws.send(data+"");
+        });
+        stream.stderr.on('data',data=>{
+          console.log("STDERR: "+data);
+         ws.send(data+"");
+        })
       }
-      sshConnection.connect({    
-        host: '13.90.229.109',
-        port: 22,
-        username: result.rows[0].username,
-        password: result.rows[0].password
-      })
-    })
-    
-    sshConnection.on('ready', function() {
-      socket.emit('data', '\r\n*** SSH CONNECTION ESTABLISHED ***\r\n');
-      sshConnection.shell(function(err, stream) {
-        if (err)
-          return socket.emit('data', '\r\n*** SSH SHELL ERROR: ' + err.message + ' ***\r\n');
-        socket.on('data', function(data) {
-          stream.write(data);
-        });
-        stream.on('data', function(d) {
-          socket.emit('data', d.toString('binary'));
-        }).on('close', function() {
-          sshConnection.end();
-        });
-      });
-    }).on('close', function() {
-      socket.emit('data', '\r\n*** SSH CONNECTION CLOSED ***\r\n');
-    }).on('error', function(err) {
-      socket.emit('data', '\r\n*** SSH CONNECTION ERROR: ' + err.message + ' ***\r\n');
-    })
+    });
   });
+  ws.on("close", function() {
+    console.log("websocket connection closed");
+  })
+})
+*/
+wss.on('connection', (ws,req) => {
+  console.log("websocket connection open");
+  var sshConnection = new Connection();
+  var getUserQuery = "SELECT * FROM usr WHERE id = $1";
+  pool.query(getUserQuery,[req.session.passport.user],(error, result)=>{
+    if(error){
+      res.end(error);
+    }
+    sshConnection.connect({    
+      host: '13.90.229.109',
+      port: 22,
+      username: result.rows[0].username,
+      password: result.rows[0].password
+    })
+  })
+  sshConnection.on('ready', function() {
+  sshConnection.shell(function(err, stream) {
+    if (err) throw err;
+    ws.on('message', (message) => {
+      stream.write(message);
+  });
+   stream.on('data', (data) => {
+      ws.send(data+"");
+  }).on('close', () => {
+      sshConnection.end();
+  });
+    
+  });
+  });
+
+})
+
+
