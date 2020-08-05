@@ -85,16 +85,16 @@
       <p>Upload file to text editor:</p>
       <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
        <p>Choose Syntax Highlighting:  
-        <select class="btn btn-sm btn-success" name="textEditorHighlighting" id="textEditorHighlighting" onchange="setSynataxHighlighting()">
+        <select class="bg-success" name="textEditorHighlighting" id="textEditorHighlighting" onchange="setSynataxHighlighting()">
         <option value="ace/mode/javascript">Javascript</option>
         <option value="ace/mode/c_cpp">C/CPP</option>
         <option value="ace/mode/python">Python</option>
        </select>
       </p>
        <p>Save As:
-        <input class="btn btn-sm btn-info" type="text" name="editorFileName" id="editorFileName" placeholder="File Name">
-        <select class="btn btn-sm btn-info" name="editorFileExtension" id="editorFileExtension">
-          <option value=".js">Javascript</option>
+        <input class="bg-info" type="text" name="editorFileName" id="editorFileName" placeholder="File Name">
+        <select class="bg-info" name="editorFileExtension" id="editorFileExtension">
+         <option value=".js">Javascript</option>
          <option value=".c">C</option>
          <option value=".cpp">C++</option>
          <option value=".h">C/C++ Header File</option>
