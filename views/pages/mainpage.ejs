@@ -50,13 +50,6 @@
         var x = "All this is syntax highlighted";
         return x;
     }</div>
-
-
-    <!-- <form action="/saveEditorText" method="post">
-      <div class="">
-        <input id="saveEditorText" name="editorText" type="submit" value="">
-      </div>
-    </form> -->
       
 
     <!-- Theme CDNs for ACE text editor  -->
@@ -81,7 +74,7 @@
        Upload file to server to compile and execute:
        <form action="/terminal" method="post" enctype="multipart/form-data">
         <input class="btn btn-sm btn-warning" type="file" name="terminalFile">
-        <input class="btn btn-sm btn-info" type="submit" value="Submit" > 
+        <input class="btn btn-sm btn-info" type="submit" value="Submit" >
       </form> 
      </ul>
     
@@ -92,6 +85,7 @@
        Upload file to text editor:
        
        <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
+       <input type="file" name="editorFileName" id="editorFileName">
        <input class="btn btn-sm btn-info" type="button" value="Save" onclick="onWriteClick()"/>
      </ul>
 
@@ -165,20 +159,14 @@
       element = element.replace(/([^\r])\n/g, "$1\r\n");
     });
 
-    var myArray2 = editor.session.getDocument().$lines;
-    myArray.forEach(element => {
-      element = element.replace(/([^\r])\n/g, "$1\r\n");
-    });
-
     for(var i = 1; i < myArray.length; i+=2) {
       myArray.splice(i,0,'\n');
     }
 
-    var myArrayJSON = JSON.stringify(myArray);
-
   var blob = new Blob(myArray);
   // var blob = new Blob(myArray, {type:'javascript',endings:'native'});
-  window.saveAs(blob, "test_file.js");
+  var editorFileName = document.getElementById("editorFileName");
+  window.saveAs(blob, document.getElementById("editorFileName") + "js");
   }
 
   function onWriteClick() {
