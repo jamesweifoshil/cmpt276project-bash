@@ -86,6 +86,13 @@
        
        <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
        <input type="text" name="editorFileName" id="editorFileName" placeholder="File Name">
+       <select name="editforFileType" id="editforFileType">
+        <option value=".c">C</option>
+        <option value=".cpp">C++</option>
+        <option value=".h">C/C++ Header File</option>
+        <option value=".js">Javascript</option>
+        <option value=".py">Python</option>
+       </select>
        <input class="btn btn-sm btn-info" type="button" value="Save" onclick="onWriteClick()"/>
      </ul>
 
