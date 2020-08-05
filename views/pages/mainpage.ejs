@@ -85,7 +85,7 @@
        Upload file to text editor:
        
        <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
-       <select name="textEditorHighlighting" id="textEditorHighlighting">
+       <select class="float" name="textEditorHighlighting" id="textEditorHighlighting" onchange="setSynataxHighlighting()">
         <option value="c_cpp">C/CPP</option>
         <option value="ace/mode/javascript">Javascript</option>
         <option value="python">Python</option>
@@ -121,6 +121,10 @@
           editor.session.setValue(reader.result)
       }  
       reader.readAsText(file) 
+  }
+
+  function setSynataxHighlighting() {
+    editor.session.setMode(document.getElementById('textEditorHighlighting').value);
   }
     
     var term = new Terminal({
