@@ -19,9 +19,8 @@ initializePassport(passport);
 
 var sessionParser = session({
   secret:"secret",
-  resave: true,
-  saveUninitialized: true,
-  maxAge: 3600000 
+  resave: false,
+  saveUninitialized: false
 });
 
 var app = express();
@@ -349,7 +348,7 @@ app.post('/terminal',(req,res)=>{
   //Use multiparty to parse the choose file form
   var form = new multiparty.Form();
   form.parse(req, (err,fields,files)=>{
-    console.log(files.terminalFile[0].path);
+    //console.log(files.terminalFile[0].path);
     var sftp = new Client();
     sftp.connect({
       host: '13.90.229.109',
@@ -375,13 +374,15 @@ app.post('/terminal',(req,res)=>{
 
 //open socket to receive commands and send output to front-end
 io.on('connection', function(socket) {
-    var sshConnection = new Connection();
-    console.log(socket.request.session.passport.user);
+    var sshConnection = new Connection(); 
+    //hha
+    if(socket.request.session.passport){
     var getUserQuery = "SELECT * FROM usr WHERE id = $1";
     pool.query(getUserQuery,[socket.request.session.passport.user],(error, result)=>{
       if(error){
         res.end(error);
       }
+
       sshConnection.connect({    
         host: '13.90.229.109',
         port: 22,
@@ -389,7 +390,7 @@ io.on('connection', function(socket) {
         password: result.rows[0].password
       })
     })
-    
+  }
     sshConnection.on('ready', function() {
       socket.emit('data', '\r\n*** SSH CONNECTION ESTABLISHED ***\r\n');
       sshConnection.shell(function(err, stream) {

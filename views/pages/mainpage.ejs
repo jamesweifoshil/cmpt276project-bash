@@ -25,10 +25,13 @@
           right: 2%;
           bottom: 2%;
           left: 2%;
-          margin-top: 900px;
+          margin-top: 860px;
       }
     </style>
     <style>
+      h3 {
+        color:darkred;
+      }
       body {
         font-family: helvetica, sans-serif, arial;
         font-size: 1em;
@@ -59,23 +62,6 @@
     <% }else { %>
       <h1>Hello user <%=user.username%> </h1>
     <% } %>
-    <div id="editnav" class="container-fluid text-left">
-
-      <!-- <input class="btn btn-sm btn-warning" type="button" id="downloadbtn" onclick="downloadHTML()" value="Download"> -->
-      <ul>
-        <a class="btn btn-sm btn-danger pull-left col-xs-2" href="/logout">Logout</a>
-        
-      </ul>
-
-    </div>
-    <div id="editnav" class="container-fluid text-left">
-
-      <!-- <input class="btn btn-sm btn-warning" type="button" id="downloadbtn" onclick="downloadHTML()" value="Download"> -->
-      <ul>
-        <a class="btn btn-sm btn-success pull-left col-xs-2" href="./fileUpload">Upload an Avatar Image</a>
-      </ul>
-
-    </div>
     <!-- Ace text-editor package: https://ace.c9.io/#nav=about -->
     <div id="editor" class="pull-left">function foo(items) {
         var x = "All this is syntax highlighted";
@@ -109,10 +95,10 @@
      <h3>Terminal</h3>
      
      <ul>
-       Upload file to server to compile and execute:
+       <h4>Upload file to server to compile and execute:</h4>
        <form action="/terminal" method="post" enctype="multipart/form-data">
         <input class="btn btn-sm btn-warning" type="file" name="terminalFile">
-        <input class="btn btn-sm btn-info" type="submit" value="Submit" > 
+        <input class="btn btn-sm btn-success" type="submit" value="Submit" > 
       </form> 
      </ul>
     
@@ -120,10 +106,9 @@
      <div><h3>Text editor</h3></div>
      
      <ul>
-       Upload file to text editor:
-       
+      <h4>Upload file to text editor:</h4>
        <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
-       <input class="btn btn-sm btn-info" type="button" value="Save" onclick="onWriteClick()"/>
+       <input class="btn btn-sm btn-success" type="button" value="Save" onclick="onWriteClick()"/>
      </ul>
 
 
