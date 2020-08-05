@@ -86,7 +86,7 @@
        
        <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
        <input type="text" name="editorFileName" id="editorFileName" placeholder="File Name">
-       <select name="editforFileType" id="editforFileType">
+       <select name="editorFileExtension" id="editorFileExtension">
         <option value=".c">C</option>
         <option value=".cpp">C++</option>
         <option value=".h">C/C++ Header File</option>
@@ -173,7 +173,8 @@
   var blob = new Blob(myArray);
   // var blob = new Blob(myArray, {type:'javascript',endings:'native'});
   var editorFileName = document.getElementById('editorFileName').value;
-  window.saveAs(blob, document.getElementById('editorFileName').value + ".js");
+  var editorFileExtension = document.getElementById('editorFileName').value;
+  window.saveAs(blob, document.getElementById('editorFileName').value + document.getElementById('editorFileExtension').value);
   }
 
   function onWriteClick() {
