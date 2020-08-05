@@ -85,6 +85,11 @@
        Upload file to text editor:
        
        <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
+       <select name="textEditorHighlighting" id="textEditorHighlighting">
+        <option value="c_cpp">C/CPP</option>
+        <option value="ace/mode/javascript">Javascript</option>
+        <option value="python">Python</option>
+       </select>
        <input type="text" name="editorFileName" id="editorFileName" placeholder="File Name">
        <select name="editorFileExtension" id="editorFileExtension">
         <option value=".c">C</option>
@@ -163,7 +168,7 @@
   function writeFileUsingFileSaver() {
     var myArray = editor.session.getDocument().$lines;
     myArray.forEach(element => {
-      element = element.replace(/([^\r])\n/g, "$1\r\n");
+      element = element.replace(/([^\r])\n/g, "");
     });
 
     for(var i = 1; i < myArray.length; i+=2) {
