@@ -1,4 +1,3 @@
-const WebSocketServer = require("ws").Server;
 const express = require('express');
 const multer = require('multer');
 const aws = require('aws-sdk');
@@ -12,7 +11,6 @@ const flash = require('express-flash');
 const passport = require('passport');
 const bcrypt = require("bcrypt");
 const multiparty = require("multiparty");
-const Pty = require('node-pty');
 var Client = require('ssh2-sftp-client');
 
 initializePassport(passport);
@@ -243,7 +241,7 @@ app.post("/register", async (req,res)=>{
               })
             }
           });
-          setTimeout(executeCommand,5000,"echo '"+username+":"+hashedPassword+"' | sudo chpasswd");
+          setTimeout(executeCommand,4000,"echo '"+username+":"+hashedPassword+"' | sudo chpasswd");
           //conn.end();
           res.redirect('/login');
         })
@@ -308,7 +306,7 @@ app.get('/logout', (req, res)=>{
 })
 
 app.get('/db', checkNotAuthenticated, checkRole('admin'), nocache, (req, res)=>{
-  let getUserQuery = 'SELECT * FROM usr WHERE username <> \'admin\';';
+  let getUserQuery = 'SELECT * FROM usr WHERE role <> \'admin\';';
   pool.query(getUserQuery,(error, result)=>{
     if(error)
       res.end(error);
@@ -326,18 +324,44 @@ app.get('/view-user/:id', checkNotAuthenticated, checkRole('admin'), nocache, (r
     }
     var results = {'rows':result.rows[0]};
     res.render('pages/view-user', results);
+    conn.connect({
+      host:'13.90.229.109',
+      port: 22,
+      username:'khoatxp',
+      password:'Cmpt276Bash123@'
+  });
   });
 });
 
 app.post('/delete-user/:id',(req,res)=>{
   var id = req.params.id;
+  var getUserQuery = "SELECT * FROM usr WHERE id = $1";
   var deleteUserQuery = 'DELETE FROM usr WHERE id = $1';
-  pool.query(deleteUserQuery,[id],(error,result)=>{
+  pool.query(getUserQuery,[id],(error, result)=>{
     if(error){
       res.end(error);
     }
-    res.redirect('/db');
-  })
+    var usrname = result.rows[0].username;
+    pool.query(deleteUserQuery,[id],(error,result)=>{
+      if(error){
+        res.end(error);
+      }
+      conn.exec('sudo deluser --remove-home '+usrname, (err, stream) => {
+        if (err) {
+          console.error(err)
+        } else {
+          stream.on('data',function(data){
+            console.log("STDOUT: "+data);
+          });
+          stream.stderr.on('data',data=>{
+            console.log("STDERR: "+data);
+          })
+        }
+      });
+      res.redirect('/db');
+    })
+  });
+
 })
 
 app.post('/saveEditorText', (req,res)=> {
@@ -375,7 +399,6 @@ app.post('/terminal',(req,res)=>{
 //open socket to receive commands and send output to front-end
 io.on('connection', function(socket) {
     var sshConnection = new Connection(); 
-    //hha
     if(socket.request.session.passport){
     var getUserQuery = "SELECT * FROM usr WHERE id = $1";
     pool.query(getUserQuery,[socket.request.session.passport.user],(error, result)=>{
