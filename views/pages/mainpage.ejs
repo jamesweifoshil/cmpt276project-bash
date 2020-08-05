@@ -82,20 +82,21 @@
      <div><h3>Text editor</h3></div>
      
      <ul>
-       Upload file to text editor:
-       
-       <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
-       <select class="float" name="textEditorHighlighting" id="textEditorHighlighting" onchange="setSynataxHighlighting()">
-        <option value="ace/mode/c_cpp">C/CPP</option>
+      <p>Upload file to text editor:</p>
+      <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
+       <p>Choose Syntax Highlighting:</p>
+       <select class="" name="textEditorHighlighting" id="textEditorHighlighting" onchange="setSynataxHighlighting()">
         <option value="ace/mode/javascript">Javascript</option>
+        <option value="ace/mode/c_cpp">C/CPP</option>
         <option value="ace/mode/python">Python</option>
        </select>
+       <p>Save As:</p>
        <input type="text" name="editorFileName" id="editorFileName" placeholder="File Name">
        <select name="editorFileExtension" id="editorFileExtension">
+         <option value=".js">Javascript</option>
         <option value=".c">C</option>
         <option value=".cpp">C++</option>
         <option value=".h">C/C++ Header File</option>
-        <option value=".js">Javascript</option>
         <option value=".py">Python</option>
        </select>
        <input class="btn btn-sm btn-info" type="button" value="Save" onclick="onWriteClick()"/>
