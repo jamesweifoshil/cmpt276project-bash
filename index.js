@@ -1,4 +1,3 @@
-const WebSocketServer = require("ws").Server;
 const express = require('express');
 const multer = require('multer');
 const aws = require('aws-sdk');
@@ -13,6 +12,7 @@ const passport = require('passport');
 const bcrypt = require("bcrypt");
 const multiparty = require("multiparty");
 var Client = require('ssh2-sftp-client');
+
 initializePassport(passport);
 
 var sessionParser = session({
@@ -37,18 +37,15 @@ app.set('view engine', 'ejs')
 
 
 var Connection = require('ssh2');
-var conn = new Connection();
 var http = require('http');
 var server = http.createServer(app);
+var io = require('socket.io')(server);
+io.use(function(socket, next){
+    // Wrap the express middleware
+    sessionParser(socket.request, {}, next);
+})
 server.listen(PORT);
-var ssh2ConnectionControl = false;
-conn.on('error', function(err) {
-  console.log('SSH - Connection Error: ' + err);
-});
-conn.on('connect',()=>{console.log('connected')})
-conn.on('end', function() {
-  console.log('SSH - Connection Closed');
-});
+
 
 
 
@@ -149,6 +146,7 @@ app.post('/save-details', (req, res) => {
 /*
  * Respond to GET requests to /register
  */
+var conn = new Connection();
 app.get("/register", checkAuthenticated, (req, res)=>{
   res.render("pages/register");
   conn.connect({
@@ -163,6 +161,7 @@ app.get("/register", checkAuthenticated, (req, res)=>{
  * executeCommand function helps prevent concurrent commands sent to remote server
  * is used with setTimeOut
  */
+
 function executeCommand(command){
   conn.exec(command, (err, stream) => {
     if (err) {
@@ -229,6 +228,7 @@ app.post("/register", async (req,res)=>{
           
           //Automatically add username to remote Linux server with home directory and password
           let command = "sudo adduser --quiet --disabled-password --shell /bin/bash --home /home/"+username+" --gecos \"User\" "+username;
+          
           conn.exec(command, (err, stream) => {
             if (err) {
               console.error(err)
@@ -241,7 +241,7 @@ app.post("/register", async (req,res)=>{
               })
             }
           });
-          setTimeout(executeCommand,5000,"echo '"+username+":"+hashedPassword+"' | sudo chpasswd");
+          setTimeout(executeCommand,4000,"echo '"+username+":"+hashedPassword+"' | sudo chpasswd");
           //conn.end();
           res.redirect('/login');
         })
@@ -250,7 +250,7 @@ app.post("/register", async (req,res)=>{
   }
 });
 
-//"echo 'khoatxp:Cmpt276Bash123@' | sudo chpasswd"
+
 /*
  * Respond to GET requests to /login
  */
@@ -294,22 +294,6 @@ app.get('/demo', function(req, res) {
  */
 app.get("/mainpage",checkNotAuthenticated,nocache, (req, res)=>{
   res.render("pages/mainpage", {user: req.user});
-  if(req.user.username === "khoatxp"){
-    conn.connect({
-      host:'13.90.229.109',
-      port: 22,
-      username: req.user.username,
-      password: 'Cmpt276Bash123@'
-    });
-  }
-  else{
-    conn.connect({
-      host:'13.90.229.109',
-      port: 22,
-      username: req.user.username,
-      password: req.user.password
-    });
-  }
 });
 
 app.get('/logout', (req, res)=>{
@@ -322,7 +306,7 @@ app.get('/logout', (req, res)=>{
 })
 
 app.get('/db', checkNotAuthenticated, checkRole('admin'), nocache, (req, res)=>{
-  let getUserQuery = 'SELECT * FROM usr WHERE username <> \'admin\';';
+  let getUserQuery = 'SELECT * FROM usr WHERE role <> \'admin\';';
   pool.query(getUserQuery,(error, result)=>{
     if(error)
       res.end(error);
@@ -340,18 +324,44 @@ app.get('/view-user/:id', checkNotAuthenticated, checkRole('admin'), nocache, (r
     }
     var results = {'rows':result.rows[0]};
     res.render('pages/view-user', results);
+    conn.connect({
+      host:'13.90.229.109',
+      port: 22,
+      username:'khoatxp',
+      password:'Cmpt276Bash123@'
+  });
   });
 });
 
 app.post('/delete-user/:id',(req,res)=>{
   var id = req.params.id;
+  var getUserQuery = "SELECT * FROM usr WHERE id = $1";
   var deleteUserQuery = 'DELETE FROM usr WHERE id = $1';
-  pool.query(deleteUserQuery,[id],(error,result)=>{
+  pool.query(getUserQuery,[id],(error, result)=>{
     if(error){
       res.end(error);
     }
-    res.redirect('/db');
-  })
+    var usrname = result.rows[0].username;
+    pool.query(deleteUserQuery,[id],(error,result)=>{
+      if(error){
+        res.end(error);
+      }
+      conn.exec('sudo deluser --remove-home '+usrname, (err, stream) => {
+        if (err) {
+          console.error(err)
+        } else {
+          stream.on('data',function(data){
+            console.log("STDOUT: "+data);
+          });
+          stream.stderr.on('data',data=>{
+            console.log("STDERR: "+data);
+          })
+        }
+      });
+      res.redirect('/db');
+    })
+  });
+
 })
 
 app.post('/saveEditorText', (req,res)=> {
@@ -359,11 +369,10 @@ app.post('/saveEditorText', (req,res)=> {
 })
 
 app.post('/terminal',(req,res)=>{
-  console.log(req.user);
   //Use multiparty to parse the choose file form
   var form = new multiparty.Form();
   form.parse(req, (err,fields,files)=>{
-    console.log(files.terminalFile[0].path);
+    //console.log(files.terminalFile[0].path);
     var sftp = new Client();
     sftp.connect({
       host: '13.90.229.109',
@@ -388,31 +397,40 @@ app.post('/terminal',(req,res)=>{
 
 
 //open socket to receive commands and send output to front-end
-
-const wss = new WebSocketServer({server:server})
-console.log("websocket server created");
-wss.on('connection', (ws,req) => {
-  console.log("websocket connection open")
-  ws.on('message', message => {
-    console.log(`Received message => ${message}`)
-    
-    conn.exec(message,{pty:true},(err, stream) => {
-      if (err) {
-        console.error(err)
-      } else {
-        stream.on('data',function(data){
-          console.log("STDOUT: "+data);
-          ws.send(data+"");
-        });
-        stream.stderr.on('data',data=>{
-          console.log("STDERR: "+data);
-         ws.send(data+"");
-        })
+io.on('connection', function(socket) {
+    var sshConnection = new Connection(); 
+    if(socket.request.session.passport){
+    var getUserQuery = "SELECT * FROM usr WHERE id = $1";
+    pool.query(getUserQuery,[socket.request.session.passport.user],(error, result)=>{
+      if(error){
+        res.end(error);
       }
-    });
-  });
-  ws.on("close", function() {
-    console.log("websocket connection close");
-  })
-})
 
+      sshConnection.connect({    
+        host: '13.90.229.109',
+        port: 22,
+        username: result.rows[0].username,
+        password: result.rows[0].password
+      })
+    })
+  }
+    sshConnection.on('ready', function() {
+      socket.emit('data', '\r\n*** SSH CONNECTION ESTABLISHED ***\r\n');
+      sshConnection.shell(function(err, stream) {
+        if (err)
+          return socket.emit('data', '\r\n*** SSH SHELL ERROR: ' + err.message + ' ***\r\n');
+        socket.on('data', function(data) {
+          stream.write(data);
+        });
+        stream.on('data', function(d) {
+          socket.emit('data', d.toString('binary'));
+        }).on('close', function() {
+          sshConnection.end();
+        });
+      });
+    }).on('close', function() {
+      socket.emit('data', '\r\n*** SSH CONNECTION CLOSED ***\r\n');
+    }).on('error', function(err) {
+      socket.emit('data', '\r\n*** SSH CONNECTION ERROR: ' + err.message + ' ***\r\n');
+    })
+  });
