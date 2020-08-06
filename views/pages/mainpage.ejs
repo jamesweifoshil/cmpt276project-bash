@@ -94,11 +94,12 @@
      
      <ul>
 
-       <h4>Upload a file/multiple files to remote server to compile and execute:</h4>
+       <h4>Upload a file to remote server to compile and execute:</h4>
        <ul>
        <form action="/terminal" method="post" enctype="multipart/form-data">
-        <input class="btn btn-sm btn-warning" type="file" name="terminalFile" multiple>
-        <h5>Specify remote path to upload:</h5>
+        <input class="btn btn-sm btn-warning" type="file" name="terminalFile">
+        <h5>Specify remote path to file:</h5>
+        <h6>(Not including file name)</h6>
         home/<%=user.username%>/
         <input type="text" name="path" placeholder="Path to file">
         <input class="btn btn-sm btn-success" type="submit" value="Submit" > 

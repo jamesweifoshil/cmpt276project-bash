@@ -378,32 +378,49 @@ app.post('/terminal',(req,res)=>{
     if(fields.path && fields.path[fields.path.length-1]!=='/'){
       fields.path+='/';
     }
-    console.log(fields.path);
-    if(files.terminalFile[0].size){
-      var sftp = new Client();
-      sftp.connect({
-        host: '13.90.229.109',
-        port: 22,
-        username: req.user.username,
-        password: req.user.password
-      },'once')
-      .then(()=>{
-        files.terminalFile.forEach(element => {
-          sftp.fastPut(element.path,'/home/'+req.user.username+'/'+fields.path+element.originalFilename,{}).then(()=>{
-        }).catch((err)=>{
-            sftp.end();
-            console.log(err,'fastPut method error');
-          })
-        })
+    var sftp = new Client();
+    sftp.connect({
+      host: '13.90.229.109',
+      port: 22,
+      username: req.user.username,
+      password: req.user.password
+    },'once').then(()=>{
+      sftp.fastPut(files.terminalFile[0].path,'/home/'+req.user.username+'/'+fields.path+files.terminalFile[0].originalFilename,{}).then(()=>{
+        sftp.end();
       }).catch((err)=>{
         sftp.end();
-        console.log(err,'connect method error');
-      });
-    } 
+        console.log(err,'fastPut method error');
+      })
+    }).catch((err)=>{
+      sftp.end();
+      console.log(err,'connect method error');
+    });
+
   });
   res.status(204).send();
 })
-
+/*
+if(files.terminalFile[0].size){
+  var sftp = new Client();
+  sftp.connect({
+    host: '13.90.229.109',
+    port: 22,
+    username: req.user.username,
+    password: req.user.password
+  },'once')
+  .then(()=>{
+    files.terminalFile.forEach(element => {
+      sftp.fastPut(element.path,'/home/'+req.user.username+'/'+fields.path+element.originalFilename,{}).then(()=>{
+    }).catch((err)=>{
+        console.log(err,'fastPut method error');
+      })
+    })
+  }).catch((err)=>{
+    sftp.end();
+    console.log(err,'connect method error');
+  });
+} 
+*/
 app.post('/downloadFile', (req, res) => {
   
   if(req.body.path && req.body.path[req.body.path.length-1]!=='/'){
