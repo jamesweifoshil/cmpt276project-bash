@@ -428,24 +428,34 @@ app.post('/downloadFile', (req, res) => {
   }
   const remotePath = req.body.path+ req.body.fileName;
   const localPath = path.join(process.env.HOME || process.env.USERPROFILE, 'Downloads/' + req.body.fileName);
-  var sftp = new Client();
-  sftp.connect({
-      host: '13.90.229.109',
-      port: 22,
-      username: req.user.username,
-      password: req.user.password
-  },'once')
-    .then(() => {
-      sftp.fastGet(remotePath, localPath, {}).then(() => {
-          sftp.end();
-      }).catch((err) => {
-          sftp.end();
-          console.log(err, 'fastGet method error');
-      })
-  }).catch((err) => {
-      sftp.end();
-      console.log(err, 'connect method error');
+  if(req.body.fileName){
+  var sshConnection = new Connection();
+  sshConnection.on('ready', function () {
+    sshConnection.sftp(function (err, sftp) {
+        if (err) throw err;
+        var rstream = sftp.createReadStream(remotePath);
+        var wstream = fs.createWriteStream(localPath);
+        rstream.pipe(wstream);
+        rstream.on('error', function (err) { 
+            console.log(err.message);
+            sshConnection.end();
+            rstream.destroy();
+            wstream.destroy();
+        });
+        rstream.on('end', function () {
+          sshConnection.end();
+        });
+        wstream.on('finish', function () {
+            console.log(`${remotePath} has successfully download to ${localPath}!`);
+        });
+    });
+  }).connect({
+    host: '13.90.229.109',
+    port: 22,
+    username: req.user.username,
+    password: req.user.password
   });
+}
   res.status(204).send();
 });
 
