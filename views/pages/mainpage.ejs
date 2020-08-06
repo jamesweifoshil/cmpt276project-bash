@@ -28,20 +28,25 @@
           right: 2%;
           bottom: 2%;
           left: 2%;
-          margin-top: 960px;
+          margin-top: 1130px;
       }
     </style>
     <style>
       h3 {
         color:darkred;
+        font-weight: bold;
+      }
+      h4{
+        font-weight: bold;
       }
       body {
         font-family: helvetica, sans-serif, arial;
         font-size: 1em;
         color: #111;
       }
-      h1 {
-        text-align: center;
+      h1{
+        font-weight: bold;
+        font-style: italic;
       }
       #terminal-container {
         width: 1850px;
@@ -88,27 +93,46 @@
      <h3>Terminal</h3>
      
      <ul>
-       <h4>Upload file to server to compile and execute:</h4>
+
+       <h4>Upload a file/multiple files to remote server to compile and execute:</h4>
+       <ul>
        <form action="/terminal" method="post" enctype="multipart/form-data">
-        <input class="btn btn-sm btn-warning" type="file" name="terminalFile">
+        <input class="btn btn-sm btn-warning" type="file" name="terminalFile" multiple>
+        <h5>Specify remote path to upload:</h5>
+        home/<%=user.username%>/
+        <input type="text" name="path" placeholder="Path to file">
         <input class="btn btn-sm btn-success" type="submit" value="Submit" > 
       </form> 
+      </ul>
+
+      <h4>Download a file from remote server:</h4>
+      <ul>
+      <form action="/downloadFile" method="post">
+       <h5>Specify remote path and file name for downloading:</h5>
+       <h6>(File downloaded will be in your machine Downloads folder)</h6>
+       home/<%=user.username%>/
+       <input type="text" name="path" placeholder="Path"> / 
+       <input type="text" name="fileName" placeholder="File name">
+       <input class="btn btn-sm btn-success" type="submit" value="Submit" > 
+     </form> 
      </ul>
+
+    </ul>
     
      <div id="terminal-container"></div>
      <div><h3>Text editor</h3></div>
      
      <ul>
-      <p><h4>Upload file to text editor:</h4></p>
+      <p><h4>Upload a file to Text editor:</h4></p>
       <input class="btn btn-sm btn-warning" type="file" id="openbtn" onchange="openCode(this.files)" value="Open">
-       <p><h4>Choose Syntax Highlighting:</h4>  
+       <p><h4>Choose syntax highlighting:</h4>  
         <select class="bg-success" name="textEditorHighlighting" id="textEditorHighlighting" onchange="setSynataxHighlighting()">
         <option value="ace/mode/javascript">Javascript</option>
         <option value="ace/mode/c_cpp">C/CPP</option>
         <option value="ace/mode/python">Python</option>
        </select>
       </p>
-       <p><h4>Save As:</h4>
+       <p><h4>Save file as:</h4>
         <input class="bg-info" type="text" name="editorFileName" id="editorFileName" placeholder="File Name">
         <select class="bg-info" name="editorFileExtension" id="editorFileExtension">
          <option value=".js">Javascript</option>
@@ -116,9 +140,9 @@
          <option value=".cpp">C++</option>
          <option value=".h">C/C++ Header File</option>
          <option value=".py">Python</option>
-         <input class="btn btn-sm btn-success" type="button" value="Save" onclick="onWriteClick()"/>
         </select>
        </p>
+       <input class="btn btn-sm btn-success" type="button" value="Save" onclick="onWriteClick()"/>
      </ul>
 
 
