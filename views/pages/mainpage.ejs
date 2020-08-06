@@ -198,8 +198,10 @@ function writeFileUsingFileSaver() {
     element = element.replace(/([^\r])\n/g, "");
   });
 
-  for(var i = 1; i < myArray.length; i+=2) {
-    myArray.splice(i,0,'\n');
+  if(document.getElementById('editorFileExtension').value !== '.js') {
+    for(var i = 1; i < myArray.length; i+=2) {
+      myArray.splice(i,0,'\n');
+    }
   }
 
 var blob = new Blob(myArray);
