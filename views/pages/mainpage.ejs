@@ -22,7 +22,7 @@
     <!-- <link rel="stylesheet" href="/public/stylesheets/mainPage.css"> -->
     <style type="text/css" media="screen">
       #editor { 
-          position: relative;
+          position: absolute;
           height:600px;
           top: 2%;
           right: 2%;
@@ -209,6 +209,7 @@ var blob = new Blob(myArray);
 var editorFileName = document.getElementById('editorFileName').value;
 var editorFileExtension = document.getElementById('editorFileName').value;
 window.saveAs(blob, document.getElementById('editorFileName').value + document.getElementById('editorFileExtension').value);
+myArray = null;
 }
 
 function onWriteClick() {
