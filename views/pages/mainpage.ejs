@@ -22,7 +22,7 @@
     <!-- <link rel="stylesheet" href="/public/stylesheets/mainPage.css"> -->
     <style type="text/css" media="screen">
       #editor { 
-          position: absolute;
+          position: relative;
           height:600px;
           top: 2%;
           right: 2%;
@@ -198,7 +198,7 @@ function writeFileUsingFileSaver() {
     element = element.replace(/([^\r])\n/g, "");
   });
 
-  if(document.getElementById('editorFileExtension').value !== '.js') {
+  if(document.getElementById('editorFileExtension').value === '.js') {
     for(var i = 1; i < myArray.length; i+=2) {
       myArray.splice(i,0,'\n');
     }
