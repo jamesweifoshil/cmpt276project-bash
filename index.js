@@ -372,7 +372,12 @@ app.post('/terminal',(req,res)=>{
   //Use multiparty to parse the choose file form
   var form = new multiparty.Form();
   form.parse(req, (err,fields,files)=>{
-    //console.log(files.terminalFile[0].path);
+    if(err){
+      res.end(err);
+    }
+    if(fields.path && fields.path[fields.path.length-1]!=='/'){
+      fields.path+='/';
+    }
     var sftp = new Client();
     sftp.connect({
       host: '13.90.229.109',
@@ -380,7 +385,7 @@ app.post('/terminal',(req,res)=>{
       username: req.user.username,
       password: req.user.password
     },'once').then(()=>{
-      sftp.fastPut(files.terminalFile[0].path,'/home/'+req.user.username+'/'+files.terminalFile[0].originalFilename,{}).then(()=>{
+      sftp.fastPut(files.terminalFile[0].path,'/home/'+req.user.username+'/'+fields.path+files.terminalFile[0].originalFilename,{}).then(()=>{
         sftp.end();
       }).catch((err)=>{
         sftp.end();
@@ -390,10 +395,59 @@ app.post('/terminal',(req,res)=>{
       sftp.end();
       console.log(err,'connect method error');
     });
-    
+
   });
   res.status(204).send();
 })
+/*
+if(files.terminalFile[0].size){
+  var sftp = new Client();
+  sftp.connect({
+    host: '13.90.229.109',
+    port: 22,
+    username: req.user.username,
+    password: req.user.password
+  },'once')
+  .then(()=>{
+    files.terminalFile.forEach(element => {
+      sftp.fastPut(element.path,'/home/'+req.user.username+'/'+fields.path+element.originalFilename,{}).then(()=>{
+    }).catch((err)=>{
+        console.log(err,'fastPut method error');
+      })
+    })
+  }).catch((err)=>{
+    sftp.end();
+    console.log(err,'connect method error');
+  });
+} 
+*/
+app.post('/downloadFile', (req, res) => {
+  
+  if(req.body.path && req.body.path[req.body.path.length-1]!=='/'){
+    req.body.path+='/';
+  }
+  const remotePath = req.body.path+ req.body.fileName;
+  const localPath = path.join(process.env.HOME || process.env.USERPROFILE, 'Downloads/' + req.body.fileName);
+  var sftp = new Client();
+  sftp.connect({
+      host: '13.90.229.109',
+      port: 22,
+      username: req.user.username,
+      password: req.user.password
+  },'once')
+    .then(() => {
+      sftp.fastGet(remotePath, localPath, {}).then(() => {
+          sftp.end();
+      }).catch((err) => {
+          sftp.end();
+          console.log(err, 'fastGet method error');
+      })
+  }).catch((err) => {
+      sftp.end();
+      console.log(err, 'connect method error');
+  });
+  res.status(204).send();
+});
 
 
 //open socket to receive commands and send output to front-end
