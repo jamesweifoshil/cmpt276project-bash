@@ -28,7 +28,7 @@
           right: 2%;
           bottom: 2%;
           left: 2%;
-          margin-top: 860px;
+          margin-top: 960px;
       }
     </style>
     <style>
@@ -116,7 +116,7 @@
          <option value=".cpp">C++</option>
          <option value=".h">C/C++ Header File</option>
          <option value=".py">Python</option>
-         <input class="btn btn-sm btn-info" type="button" value="Save" onclick="onWriteClick()"/>
+         <input class="btn btn-sm btn-success" type="button" value="Save" onclick="onWriteClick()"/>
         </select>
        </p>
      </ul>
@@ -125,44 +125,7 @@
 
   
   <script>
-    var term = new Terminal({
-      cursorBlink: "block"
-    });
 
-    wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host;
-    const ws = new WebSocket(wsURL);
-    ws.onmessage = msg => {
-      console.log(msg.data);
-      var output = msg.data.split("\n")
-      for (var x=0; x<output.length; x++ ){
-        term.write(output[x]+"\r\n");
-      }
-      term.write("$ ");
-      curr_line = "";
-    };
-
-    term.open(document.getElementById('terminal'));
-    term.write('Hello from \x1B[1;3;31mBash From Anywhere\x1B[0m $ ')
-    var curr_line="";
-    term.onKey(function(evt) {
-      //Enter
-      if (evt.domEvent.which === 13) {
-        if (curr_line) {
-          term.write("\r\n");
-          ws.send(curr_line);
-          curr_line = "";
-        }
-      } else if (evt.domEvent.which === 8) {
-        // Backspace
-        if (curr_line) {
-          curr_line = curr_line.slice(0, curr_line.length - 1);
-          term.write("\b \b");
-        }
-      } else {
-        curr_line += evt.key;
-        term.write(evt.key);
-      }
-    });
 
     //Text editor JS:
     var editor = ace.edit("editor", {
