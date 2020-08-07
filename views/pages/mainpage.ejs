@@ -210,7 +210,7 @@ function onWriteClick() {
         var socket = io.connect();
         
         socket.on('connect', function() {
-          term.write('\r\n*** Connected to remote Linux server***\r\n');
+          term.write('\r\n*** Connected to remote Linux server ***\r\n');
 
           // Browser -> Backend
           term.on('data', function(data) {

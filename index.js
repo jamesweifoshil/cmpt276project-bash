@@ -4,6 +4,7 @@ const aws = require('aws-sdk');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
+var cors = require('cors')
 const { pool } = require("./dbConfig");
 const initializePassport = require('./passportConfig');
 const session = require('express-session');
@@ -23,6 +24,7 @@ var sessionParser = session({
 
 var app = express();
 app.use(express.json());
+app.use("/",cors());
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended:false}));
 app.use(sessionParser);
@@ -191,6 +193,18 @@ app.post("/register", async (req,res)=>{
   if(password != password2){
     errors.push({message:"Passwords do not match"});
   }
+  if(username === 'admin'){
+    errors.push({message:"You cannot sign up as an admisnistrator here"});
+  }
+  var check=0;
+  for(var x=0; x<username.length;x++){
+    if(username[x].match(/[a-z]/i) || username[x].match(/[A-Z]/g)){
+      check++;
+    }
+  }
+  if(check<6){
+    errors.push({message:"User name must have at least 6 characters"});
+  }
   if(errors.length){
     res.render("pages/register",{errors});
   }
@@ -227,7 +241,7 @@ app.post("/register", async (req,res)=>{
           req.flash('success_msg',"You are now registered. Please log in!");
           
           //Automatically add username to remote Linux server with home directory and password
-          let command = "sudo adduser --quiet --disabled-password --shell /bin/bash --home /home/"+username+" --gecos \"User\" "+username;
+          let command = "sudo adduser --force-badname --quiet --disabled-password --shell /bin/bash --home /home/"+username+" --gecos \"User\" "+username;
           
           conn.exec(command, (err, stream) => {
             if (err) {
@@ -274,16 +288,16 @@ app.get("/admin",checkNotAuthenticated, checkRole('admin'), nocache, (req, res)=
 });
 
 /*
- * Respond to GET requests to /fileUpload.
- * Upon request, render the 'fileUpload' web page in views/ directory.
+ * Respond to GET requests to /profile.
+ * Upon request, render the 'profile' web page in views/ directory.
  */
-app.get('/fileUpload', checkNotAuthenticated, nocache, (req, res) => res.render('pages/fileUpload'));
+app.get('/profile', checkNotAuthenticated, nocache, (req, res) => res.render('pages/profile'));
 
 /*
- * Redirect to /fileUpload
+ * Redirect to /profile
  */
-app.post('/fileUpload', function(req, res) {
-  res.redirect('pages/fileUpload');
+app.post('/profile', function(req, res) {
+  res.redirect('pages/profile');
 });
 
 app.get('/demo', function(req, res) {
@@ -454,8 +468,10 @@ app.post('/downloadFile', (req, res) => {
 
 
 //open socket to receive commands and send output to front-end
+
 io.on('connection', function(socket) {
     var sshConnection = new Connection(); 
+    console.log(socket.request.session.passport);
     if(socket.request.session.passport){
     var getUserQuery = "SELECT * FROM usr WHERE id = $1";
     pool.query(getUserQuery,[socket.request.session.passport.user],(error, result)=>{
@@ -491,3 +507,4 @@ io.on('connection', function(socket) {
       socket.emit('data', '\r\n*** SSH CONNECTION ERROR: ' + err.message + ' ***\r\n');
     })
   });
+
