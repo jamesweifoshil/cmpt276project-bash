@@ -143,20 +143,19 @@ describe('admin', function(){
 
 after(function (done){
 
-          var id = 1;
-          chai.request(server)
-          .get('/admin').send(userCredentials)
-          .end(function(err, res) {
-              res.should.have.status(200);
-
-              chai.request(server)
-              .post('/delete-user/:id'+id).send(userCredentials)
-              .end(function(err,res2){
-                  res2.should.have.status(200);
-                  done();
-              });
-          });
-      });
+  var id = 1;
+  chai.request(server)
+  .get('/admin').send(userCredentials)
+  .end(function(err, res) {
+      res.should.have.status(200);
+      chai.request(server)
+      .post('/delete-user/:id'+id).send(userCredentials)
+      .end(function(err,res2){
+         res2.should.have.status(200);
+         done();
+       });
+    });
+});
 
 
 // describe('general ui testing', function(){
