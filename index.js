@@ -282,6 +282,7 @@ app.get("/login",checkAuthenticated, (req, res)=>{
      failureRedirect: '/login',
      failureFlash: true
  })
+
 );
 
 app.get("/admin",checkNotAuthenticated, checkRole('admin'), nocache, (req, res)=>{

@@ -46,12 +46,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jamesweifoshil/cmpt276project-bash"
+    "url": "git+https://github.com/jamesweifoshil/cmpt276project-bash.git"
   },
   "keywords": [
     "node",
     "heroku",
     "express"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jamesweifoshil/cmpt276project-bash/issues"
+  },
+  "homepage": "https://github.com/jamesweifoshil/cmpt276project-bash#readme",
+  "directories": {
+    "test": "test"
+  },
+  "author": ""
 }

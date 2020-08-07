@@ -26,31 +26,11 @@ describe('Users', function() {
         });
     });
 
-    it('should delete user on post request for /deletUser', function(done){
-        // Get num of users before delete
-        chai.request(server).get('/getAllUsers').end(function(err, res){
-            var numUsersBefore = res.body.length;
-            console.log(numUsersBefore);
-            // Delete User
-            chai.request(server).post('/deleteUser').send(
-                {'username':'mochaChaiTest'}
-                )
-                .end(function(err2,res2){
-                    //Get num of users after delete
-                    chai.request(server).get('/getAllUsers').end(function(err3, res3){
-                        var numUsersAfter = res3.body.length;
-                            console.log(numUsersAfter);
-                            (numUsersBefore - numUsersAfter).should.equal(1);
-                            done();
-                    });
-            });
-        });
-    });
-
     var user = null;
     var userCredentials = {
         username: 'philip13a', 
-        password: 'Akukwa.13A'
+        password: 'Akukwa.13A',
+        role: "user"
       }
 
     it("should log in as user philip13a", function(done) {                                                                             
@@ -63,18 +43,155 @@ describe('Users', function() {
         }); 
     });
 
+    it("user cannot login as admin", (done)=>{
+
+        chai.request(server)
+            .post('/admin').send(userCredentials)
+            .end(function(err, res) {
+                res.should.have.status(404);
+                done();
+            });
+    })    
+
+    it("user login and logout", (done)=>{
+
+        chai.request(server)
+        .post('/login').send(userCredentials)
+        .end(function(err, res) {
+            res.should.have.status(200);
+                res.should.redirect;
+            
+    })
+    chai.request(server)
+        .post('/logout').send(userCredentials)
+        .end(function(err, res) {
+            res.should.have.status(404);
+                done();
+        })
+    })
+
+    
+   
+    })
+
+describe('admin', function(){
+
+    it('should add admin', function(done){
+            chai.request(server).post('/register').send(
+                {'email':'admin@admin.com','username':'admin','password':'admin','password2':'admin'}
+                )
+                .end(function(err2,res2){
+                    res2.should.have.status(200);
+                            done();
+                    });
+            });
+
+
+
+
     userCredentials = {
         username: 'admin', 
-        password: 'admin12345'
+        password: 'admin',
+        role: "admin"
       }
-
-    it("should log in as admin", function(done) {                                                                             
+    it("admin login", (done)=>{
+    
         chai.request(server)
-            .post('/login').send(userCredentials)
-            .end(function(err, res) {
-                res.should.have.status(200);
-                res.should.redirect;
+        .get('/admin').send(userCredentials)
+        .end(function(err, res) {
+            res.should.have.status(200);
+            done();
+            
+        })
+
+    })
+
+    it("admin access database", (done)=>{
+    
+        chai.request(server)
+        .get('/admin').send(userCredentials)
+        .end(function(err, res) {
+            res.should.have.status(200);
+
+            chai.request(server)
+            .get('/db').send(userCredentials)
+            .end(function(err,res2){
+                res2.should.have.status(200);
                 done();
-            }); 
-        });
-});
+            })           
+        })
+    })
+
+    it("admin access user by id", (done)=>{
+    
+        const id=1;
+        chai.request(server)
+        .get('/admin').send(userCredentials)
+        .end(function(err, res) {
+            res.should.have.status(200);
+
+            chai.request(server)
+            .get('/view-user/'+id).send(userCredentials)
+            .end(function(err,res2){
+                res2.should.have.status(200);
+                done();
+            })           
+        })
+    })
+
+    // it("admin delete user by id", (done)=>{
+    
+    //     const id=1;
+    //     chai.request(server)
+    //     .get('/admin').send(userCredentials)
+    //     .end(function(err, res) {
+    //         res.should.have.status(200);
+
+    //         chai.request(server)
+    //         .get('/delete-user/'+id).send(userCredentials)
+    //         .end(function(err,res2){
+    //             res2.should.have.status(200);
+    //             done();
+    //         })           
+    //     })
+    // })
+})
+
+
+// describe('general ui testing', function(){
+
+//     userCredentials = {
+//         username: '', 
+//         password: '',
+//         role: ""
+//       }
+
+//       it("file upload without any info", (done)=>{
+    
+//         chai.request(server)
+//         .post('/fileUpload').send(userCredentials)
+//         .end(function(err, res) {
+//             res.should.have.status(404);
+//             done();
+            
+//         })
+
+//     })
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+// })
+
+
+
