@@ -1,6 +1,6 @@
 var chai = require('chai');
 var chaiHttp = require('chai-http');
-var server = require('../index').app;
+var server = require('../index');
 var ioserver = require('http').createServer(server);
 var io = require('socket.io')(ioserver);
 ioOptions = { 
