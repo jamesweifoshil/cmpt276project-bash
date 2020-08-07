@@ -508,3 +508,4 @@ io.on('connection', function(socket) {
     })
   });
 
+  module.exports = app;
