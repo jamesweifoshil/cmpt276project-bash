@@ -28,19 +28,19 @@ describe('Users', function() {
 
     var user = null;
     var userCredentials = {
-        username: 'philip13a', 
+        username: 'philip13a',
         password: 'Akukwa.13A',
         role: 'user'
       }
 
-    it("should log in as user philip13a", function(done) {                                                                             
+    it("should log in as user philip13a", function(done) {
     chai.request(server)
         .post('/login').send(userCredentials)
         .end(function(err, res) {
             res.should.have.status(200);
             res.should.redirect;
             done();
-        }); 
+        });
     });
 
     it("user cannot login as admin", (done)=>{
@@ -51,7 +51,7 @@ describe('Users', function() {
                 res.should.have.status(404);
                 done();
             });
-    })    
+    })
 
     it("user login and logout", (done)=>{
 
@@ -60,41 +60,38 @@ describe('Users', function() {
         .end(function(err, res) {
             res.should.have.status(200);
                 res.should.redirect;
-            
-    })
+
+    });
     chai.request(server)
         .post('/logout').send(userCredentials)
         .end(function(err, res) {
             res.should.have.status(404);
                 done();
-        })
-    })
-
-    
-   
-    })
+        });
+    });
+  });
 
 describe('admin', function(){
 
     userCredentials = {
-        username: 'admin', 
+        username: 'admin',
         password: 'admin',
         role: 'admin'
       }
     it("admin login", (done)=>{
-    
+
         chai.request(server)
         .get('/admin').send(userCredentials)
         .end(function(err, res) {
             res.should.have.status(200);
             done();
-            
-        })
 
-    })
+        });
+
+    });
 
     it("admin access database", (done)=>{
-    
+
         chai.request(server)
         .get('/admin').send(userCredentials)
         .end(function(err, res) {
@@ -105,12 +102,12 @@ describe('admin', function(){
             .end(function(err,res2){
                 res2.should.have.status(200);
                 done();
-            })           
-        })
-    })
+            });
+        });
+    });
 
     it("admin access user by id", (done)=>{
-    
+
         const id=1;
         chai.request(server)
         .get('/admin').send(userCredentials)
@@ -122,49 +119,66 @@ describe('admin', function(){
             .end(function(err,res2){
                 res2.should.have.status(200);
                 done();
-            })           
-        })
-    })
+            });
+        });
+    });
 
     it("admin delete user by id", (done)=>{
-    
-        const id=1;
-        chai.request(server)
-        .get('/admin').send(userCredentials)
-        .end(function(err, res) {
-            res.should.have.status(200);
 
-            chai.request(server)
-            .post('/delete-user/'+id).send(userCredentials)
-            .end(function(err,res2){
-                res2.should.have.status(200);
-                done();
-            })           
-        })
-    })
-})
+          const id=1;
+          chai.request(server)
+          .get('/admin').send(userCredentials)
+          .end(function(err, res) {
+              res.should.have.status(200);
+
+              chai.request(server)
+              .post('/delete-user/'+id).send(userCredentials)
+              .end(function(err,res2){
+                  res2.should.have.status(200);
+                  done();
+              });
+          });
+      });
+});
+
+after(function (done){
+
+          var id = 1;
+          chai.request(server)
+          .get('/admin').send(userCredentials)
+          .end(function(err, res) {
+              res.should.have.status(200);
+
+              chai.request(server)
+              .post('/delete-user/:id'+id).send(userCredentials)
+              .end(function(err,res2){
+                  res2.should.have.status(200);
+                  done();
+              });
+          });
+      });
 
 
 // describe('general ui testing', function(){
 
 //     userCredentials = {
-//         username: '', 
+//         username: '',
 //         password: '',
 //         role: ""
 //       }
 
 //       it("file upload without any info", (done)=>{
-    
+
 //         chai.request(server)
 //         .post('/fileUpload').send(userCredentials)
 //         .end(function(err, res) {
 //             res.should.have.status(404);
 //             done();
-            
+
 //         })
 
 //     })
-      
+
 
 
 
@@ -179,6 +193,3 @@ describe('admin', function(){
 
 
 // })
-
-
-
