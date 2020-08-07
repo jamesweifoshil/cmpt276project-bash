@@ -30,7 +30,7 @@ describe('Users', function() {
     var userCredentials = {
         username: 'philip13a', 
         password: 'Akukwa.13A',
-        role: "user"
+        role: 'user'
       }
 
     it("should log in as user philip13a", function(done) {                                                                             
@@ -76,23 +76,10 @@ describe('Users', function() {
 
 describe('admin', function(){
 
-    it('should add admin', function(done){
-            chai.request(server).post('/register').send(
-                {'email':'admin@admin.com','username':'admin','password':'admin','password2':'admin'}
-                )
-                .end(function(err2,res2){
-                    res2.should.have.status(200);
-                            done();
-                    });
-            });
-
-
-
-
     userCredentials = {
         username: 'admin', 
         password: 'admin',
-        role: "admin"
+        role: 'admin'
       }
     it("admin login", (done)=>{
     
@@ -139,22 +126,22 @@ describe('admin', function(){
         })
     })
 
-    // it("admin delete user by id", (done)=>{
+    it("admin delete user by id", (done)=>{
     
-    //     const id=1;
-    //     chai.request(server)
-    //     .get('/admin').send(userCredentials)
-    //     .end(function(err, res) {
-    //         res.should.have.status(200);
+        const id=1;
+        chai.request(server)
+        .get('/admin').send(userCredentials)
+        .end(function(err, res) {
+            res.should.have.status(200);
 
-    //         chai.request(server)
-    //         .get('/delete-user/'+id).send(userCredentials)
-    //         .end(function(err,res2){
-    //             res2.should.have.status(200);
-    //             done();
-    //         })           
-    //     })
-    // })
+            chai.request(server)
+            .post('/delete-user/'+id).send(userCredentials)
+            .end(function(err,res2){
+                res2.should.have.status(200);
+                done();
+            })           
+        })
+    })
 })
 
 
