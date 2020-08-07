@@ -13,6 +13,7 @@ const passport = require('passport');
 const bcrypt = require("bcrypt");
 const multiparty = require("multiparty");
 var Client = require('ssh2-sftp-client');
+var cors = require('cors') // cross-origin resource sharing
 
 initializePassport(passport);
 
@@ -23,19 +24,29 @@ var sessionParser = session({
 });
 
 var app = express();
+
 app.use(express.json());
 app.use("/",cors());
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended:false}));
 app.use(sessionParser);
+app.use(flash());
+const PORT = process.env.PORT || 5000
+app.use(
+  session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+  })
+  );
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-const PORT = process.env.PORT || 5000
+app.use(express.static(path.join(__dirname, 'public')));
+app.use("/", cors());
 
-app.use(express.static(path.join(__dirname, 'public')))
-app.set('views', path.join(__dirname, 'views'))
-app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 
 var Connection = require('ssh2');
@@ -281,6 +292,7 @@ app.get("/login",checkAuthenticated, (req, res)=>{
      failureRedirect: '/login',
      failureFlash: true
  })
+
 );
 
 app.get("/admin",checkNotAuthenticated, checkRole('admin'), nocache, (req, res)=>{
@@ -325,7 +337,29 @@ app.get('/db', checkNotAuthenticated, checkRole('admin'), nocache, (req, res)=>{
     if(error)
       res.end(error);
     let results = {'rows':result.rows};
+    res.json(results);
     res.render('pages/db', results);
+  });
+});
+
+
+// For testing
+app.get('/getAllUsers', (req, res)=>{
+  let getUserQuery = 'SELECT * FROM usr;';
+  pool.query(getUserQuery,(error, result)=>{
+    if(error)
+      res.end(error);
+    let results = result.rows;
+    res.json(results);
+  });
+});
+
+app.post('/deleteUser', (req, res)=>{
+  let username = req.body;
+  let getUserQuery = `DELETE FROM usr where username='${username}';`;
+  pool.query(getUserQuery,(error, result)=>{
+    if(error)
+      res.end(error);
   });
 });
 
@@ -508,4 +542,4 @@ io.on('connection', function(socket) {
     })
   });
 
-  module.exports = app;
+module.exports = app;
